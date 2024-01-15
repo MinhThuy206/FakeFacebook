@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Image;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,7 +28,9 @@ class PostTest extends TestCase
     $post = Post::query()->create([
         'content' => 'Thuy xinh gai',
     ]);
-
+    $post -> images() -> create([
+        'url' => 'hasiuedhgfshdgfh'
+    ]);
     $post = Post::query()->findOrFail($post -> id);
     print(json_encode($post));
     }

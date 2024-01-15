@@ -13,40 +13,45 @@ class AuthController extends Controller
 {
     public function formLogin()
     {
-        return view('auth.login');
+        return view('page.login');
     }
 
-    public function login (LoginRequest $request)
+    public function login(LoginRequest $request)
     {
-        if(auth() -> attempt([
-            'email' => $request -> email,
-            'password' => $request -> password
-        ], $request -> remember ?? false)){
-            return response() -> json(['message'=>'login success'])->withCookie(cookie('remember',\auth() ->user()->getRememberToken()));
-        }else{
-            return response() -> json(['message'=>'login fail'], 403);
+        if (auth()->attempt([
+            'email' => $request->email,
+            'password' => $request->password
+        ], $request->remember ?? false)) {
+            return response()->json(['message' => 'login success'])->withCookie(cookie('remember', \auth()->user()->getRememberToken()));
+        } else {
+            return response()->json(['message' => 'login fail'], 403);
+
         }
     }
 
     public function formRegister()
     {
-        return view('auth.register');
+        return view('page.register');
     }
 
     public function register(RegistrationRequest $request)
     {
         $user = User::query()->create([
-            'email' => $request -> email,
-            'name' => $request -> name,
-            'password' => $request -> password,
-            'phone' => $request -> phone
+            'email' => $request->email,
+            'name' => $request->name,
+            'password' => $request->password,
+            'phone' => $request->phone
         ]);
+        if (!$user) {
+            return redirect(route('formregister'))->with("error", "Registration failed, try again");
+        }
         return response() -> json(['message'=>'Registration success']);
     }
 
+
     function profile()
     {
-        $user = User::query() -> where('id', Auth::id()) ->first();
-        return response() -> json(['name' => $user -> name, 'email' => $user -> email, 'phone' => $user -> phone]);
+        $user = User::query()->where('id', Auth::id())->first();
+        return response()->json(['name' => $user->name, 'email' => $user->email, 'phone' => $user->phone]);
     }
 }

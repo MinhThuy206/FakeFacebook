@@ -13,7 +13,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        return view('showpost');
     }
 
     /**
@@ -26,7 +26,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('page.post.form');
     }
 
     /**
@@ -38,6 +38,7 @@ class PostController extends Controller
             'content' => $request -> get('content')
         ]);
         return response() -> json(['message'=>'Post success']);
+//        return redirect(route('home')) -> with("hehe");
     }
 
     /**
@@ -54,7 +55,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        return view('editpost');
     }
 
     /**
@@ -72,8 +73,10 @@ class PostController extends Controller
      */
     public function destroy($post)
     {
-        $post = Post::query() -> findOrFail($post);
-        $post -> delete();
+        if(auth() -> id() == Post::query() -> where('id', $this -> route('post')) -> first() -> user_id){
+            $post = Post::query() -> findOrFail($post);
+            $post -> delete();
+        }
         return response() -> json(['message' =>'remove success']);
     }
 

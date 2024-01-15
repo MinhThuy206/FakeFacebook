@@ -28,18 +28,27 @@ class Post extends Model
         return $this ->belongsTo(User::class);
     }
 
+    public function images(){
+        return $this ->hasMany(Image::class);
+    }
+
     public  function toArray ()
     {
         $array =[
             'id' => $this -> id,
             'user_id' => $this -> user_id,
             'content' => $this -> content,
+            'images' => array(),
             'like' => $this -> like,
             'comment' => $this -> comment_count,
             'created_at' => $this -> created_at,
             'updated_at' => $this -> updated_at,
             'user' => $this -> user() -> first() -> name
         ];
+        $images = $this->images() ->get();
+        foreach ($images as $image){
+            $array['images'][]= $image -> toArray();
+        }
         return $array;
     }
 
