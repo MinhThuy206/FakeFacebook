@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegistrationRequest;
 use App\Models\User;
+use http\Cookie;
 use http\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,16 +17,21 @@ class AuthController extends Controller
         return view('page.login');
     }
 
+    public function logout(Request $request)
+    {
+        $request -> session() -> invalidate();
+        return view('page.home');
+    }
+
     public function login(LoginRequest $request)
     {
         if (auth()->attempt([
             'email' => $request->email,
             'password' => $request->password
-        ], $request->remember ?? false)) {
-            return response()->json(['message' => 'login success'])->withCookie(cookie('remember', \auth()->user()->getRememberToken()));
+        ], true)) {
+            return response()->json(['message' => 'login success']) -> withCookie(cookie('remember', \auth()->user()->getRememberToken()));
         } else {
             return response()->json(['message' => 'login fail'], 403);
-
         }
     }
 

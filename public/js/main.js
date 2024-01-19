@@ -8,6 +8,46 @@ function getFormData($form){
 
     return indexed_array;
 }
+
+function renderData(post){
+    header = `
+    <div class="card" id="${post.id}" style="width: 18rem;">
+<!--        <img src="${post.image}" class="card-img-top"  alt="...">-->
+            <div class="card-body">
+                <h2>${post.user}</h2>
+                <p class="card-text">${post.content}</p>
+<!--                <a href="#" class="btn btn-primary">Go somewhere</a>-->
+            </div>
+    </div>
+    `
+    return header;
+}
+
+function getData(data){
+    $.ajax({
+        method: "GET",
+        url: "/api/post",
+        data: data,
+        headers: {'Accept': 'application/json' },
+
+        success: function (data, textStatus, jqXHR) {
+            console.log(data);
+            var post = data.data;
+            var htmlContent = '';
+            post.forEach(function (item){
+                htmlContent += renderData(item);
+            }, this)
+            $('#postList').html(htmlContent);
+        },
+        error: function(data, textStatus, jqXHR){
+            // if(jqXHR.status == 422){
+            //     error = jqXHR.responseJSON.errors;
+            //     $('#error').html(jqXHR.responseJSON.message);
+            // }
+        }
+    })
+}
+
 $(document).ready(function (){
     $('form#login').on('submit', function (e){
         e.preventDefault();
@@ -19,9 +59,7 @@ $(document).ready(function (){
             data: data,
 
             success: function(data, textStatus, jqXHR){
-                console.log(data);
-                alert();
-                location.href = '/post';
+                setTimeout(window.location.assign('/post'),2000);
             },
             error: function(jqXHR, textStatus, errorThrown){
                 if(jqXHR.status == 422){
@@ -122,38 +160,29 @@ $(document).ready(function (){
         })
     })
 
-    $('form#post').on('submit', function (e){
-        e.preventDefault();
+
+    $('form#postForm').on('submit', function (event) {
+        event.preventDefault();
         data = getFormData($(this));
         $('#error').html('');
         $.ajax({
             method: "POST",
             url: "/api/post",
             data: data,
+            headers: {'Accept': 'application/json' },
 
-            success: function(data, textStatus, jqXHR){
-                location.href = '/showpost';
+            success: function (data, textStatus, jqXHR) {
+                $('#content').val('');
+                getData(data);
             },
+
             error: function(jqXHR, textStatus, errorThrown){
                 if(jqXHR.status == 422){
                     error = jqXHR.responseJSON.errors;
-
-                    if(error.content){
-                        var data;
-                        data = '';
-                        error.content.forEach(function (item){
-                            data += item + '</br>';
-                        }, this)
-                        $('#content-error').html(data);
-                    }else{
-                        $('#content-error').html('');
-                    }
-                }else{
                     $('#error').html(jqXHR.responseJSON.message);
                 }
             }
         })
     });
-
 });
 

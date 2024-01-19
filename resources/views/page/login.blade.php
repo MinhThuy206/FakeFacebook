@@ -18,6 +18,7 @@
                 <div class="mb-1" id="password-error"></div>
             </div>
 
+
             <div class="mb-1" id="error"></div>
 
             <button type="submit" class="btn btn-primary">Submit</button>

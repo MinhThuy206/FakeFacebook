@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
+use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\CheckLogin;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,12 +21,15 @@ Route::get('/', function () {
     return view('page.home');
 });
 
-Route::get('/login', [AuthController::class, 'formLogin'])->name('formlogin');
+Route::get('/login', [AuthController::class, 'formLogin'])->name('formlogin') ;
 
 Route::get('/register', [AuthController::class, 'formRegister'])->name('formregister');
 
-Route::get('/post', [PostController::class, 'create'])->name('formpost');
+Route::get('/post', [PostController::class, 'create'])->name('formpost') -> middleware(CheckLogin::class);
 
+Route::get('/', [PostController::class, 'index'])-> middleware(CheckLogin::class);
+
+Route::get('/', [AuthController::class, 'logout'])->name('logout') -> middleware(CheckLogin::class) ;
 
 
 
