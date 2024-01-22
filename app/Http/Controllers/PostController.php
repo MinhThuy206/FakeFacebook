@@ -15,8 +15,7 @@ class PostController extends Controller
 
     public function index()
     {
-        $post = Post::all();
-        return view('page.post.form', ['posts' => $post]);
+        return view('page.post.form');
     }
 
     /**
@@ -68,7 +67,8 @@ class PostController extends Controller
         $post = Post::query()->create([
             'content' => $request -> get('content')
         ]);
-        return response() -> json(['message'=>'Post success']);
+
+        return response() -> json(['message'=>'Post success', 'id' => $post -> id]);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * App\Models\Post
@@ -18,7 +19,7 @@ class Image extends Model
 {
     use HasFactory;
     protected $table = 'images';
-    protected $guarded = ['id'];
+    protected $guarded = ['id','user_id'];
 
     public $timestamps = true;
 
@@ -31,5 +32,13 @@ class Image extends Model
             'updated_at' => $this -> updated_at,
         ];
         return $array;
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model){
+            $model -> user_id = auth() -> id();
+        });
     }
 }

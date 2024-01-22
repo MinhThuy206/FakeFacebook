@@ -26,19 +26,18 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::get('/profile', [AuthController::class, 'profile'])->name('profile') ->middleware(CheckLogin::class);
 Route::group(['prefix'=>'post', 'middleware' => CheckLogin::class], function ($route){
-    Route::post('/',[PostController::class, 'store'])->middleware(CheckLogin::class);;
+    Route::post('/',[PostController::class, 'store']);
     Route::get('/',[PostController::class, 'filter']);
-
-    Route::group(['prefix'=>'{post}/image' ], function ($route){
-        Route::get('/{image}', [ImageController::class, 'show']);
-        Route::post('/', [ImageController::class, 'store']);
-        Route::delete('/{image}', [ImageController::class, 'destroy']);
-    });
-
     Route::put('/{post}',[PostController::class, 'update']);
     Route::get('/{post}',[PostController::class, 'show']);
     Route::delete('/{post}',[PostController::class, 'destroy']);
 
 });
 
+Route::group(['prefix'=>'/image', 'middleware' => CheckLogin::class], function ($route){
+    Route::get('/{image}', [ImageController::class, 'show']);
+    Route::post('/', [ImageController::class, 'store']);
+    Route::delete('/{image}', [ImageController::class, 'destroy']);
+    Route::put('/',[ImageController::class, 'update']);
+});
 

@@ -10,6 +10,11 @@
         <textarea id="content" name="content" rows="4" cols="50"></textarea>
         <br>
 
+{{--        <form enctype="multipart/form-data" method="post" action="">--}}
+{{--            Chọn file--}}
+            <input type="file" multiple accept="image/*" id="image" onchange="xulyfile()" name="f1">
+{{--        </form>--}}
+
         <div class="mb-1" id="error"></div>
         <button type="submit">Post</button>
     </form>
@@ -37,3 +42,5 @@
         })
     </script>
 @endsection
+
+

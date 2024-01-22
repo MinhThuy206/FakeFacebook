@@ -12,7 +12,7 @@ class StoreImageRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth() -> id() == Post::query() -> where('id', $this -> route('post')) -> first() -> user_id;
+        return true;
     }
 
     /**

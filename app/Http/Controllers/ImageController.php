@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateImageRequest;
 use App\Models\Image;
 use App\Http\Requests\StoreImageRequest;
 use App\Models\Post;
@@ -28,15 +29,15 @@ class ImageController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreImageRequest $request, $post)
+    public function store(StoreImageRequest $request)
     {
-        $post = Post::query()->findOrFail($post);
         $url = Carbon::now() ->timestamp.'.'.$request -> file('image')->extension();
-        $request ->file('image') -> storeAs('image', $url,['disk'=> 'public']);
-        $post -> images() -> create([
-            'url' => '/storage/image/'.$url,
+//        $request ->file('image') -> storeAs('image', $url,['disk'=> 'public']);
+        $request->file('image')->move(public_path('image'), $url);
+        $image = Image::query()->create([
+            'url' => 'image/'.$url,
         ]);
-        return response() -> json(['message'=>'Image upload success']);
+        return response() -> json(['message'=>'Image upload success', 'id' => $image -> id]);
     }
 
     /**
@@ -54,6 +55,18 @@ class ImageController extends Controller
     public function edit(Image $image)
     {
         //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateImageRequest $request)
+    {
+        $image = Image::query() -> findOrFail($request -> image_id);
+        $post = Post::query() -> findOrFail($request -> post_id);
+        $post->images()->save($image);
+//        $image -> update($request -> validated());
+        return response() -> json(['message'=>'Update success']);
     }
 
 

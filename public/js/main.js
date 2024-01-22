@@ -10,17 +10,27 @@ function getFormData($form){
 }
 
 function renderData(post){
+    html = `<h2>${post.user}</h2>`;
+    post.images.forEach(function(item){
+        var url = "../" + item.url;
+        console.log(url);
+        html += `<img src="${url}"  width="500px"  alt="...">`
+    },this)
+
+    html += ` <div class="card-body">
+     <p class="card-text">${post.content}</p>
+     <p>-------------------------------------------------------</p>
+<!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
+            </div>`
+
     header = `
-    <div class="card" id="${post.id}" style="width: 18rem;">
-<!--        <img src="${post.image}" class="card-img-top"  alt="...">-->
-            <div class="card-body">
-                <h2>${post.user}</h2>
-                <p class="card-text">${post.content}</p>
-<!--                <a href="#" class="btn btn-primary">Go somewhere</a>-->
-            </div>
+    <div class="card" id="${post.id}" style="width: 50rem">
+
     </div>
     `
-    return header;
+
+
+    return html;
 }
 
 function getData(data){
@@ -46,6 +56,34 @@ function getData(data){
             // }
         }
     })
+}
+
+var image_arr;
+
+function xulyfile(){
+    image_arr =[];
+    var arr = $('form#postForm input#image').prop('files');
+    var formData;
+    // console.log(arr);
+    for(i=0; i<arr.length; i++){
+        formData = new FormData();
+        f = arr[i];
+        formData.append('image', f);
+        // console.log( f.name, f.size, f.type );
+        $.ajax({
+            contentType : false,
+            method : "POST",
+            url : "/api/image",
+            data : formData,
+            processData: false,
+
+            success: function(data, textStatus, jqXHR){
+                var id = data.id
+                image_arr.push(id);
+            },
+        })
+    }
+    // console.log(image_arr);
 }
 
 $(document).ready(function (){
@@ -172,8 +210,16 @@ $(document).ready(function (){
             headers: {'Accept': 'application/json' },
 
             success: function (data, textStatus, jqXHR) {
-                $('#content').val('');
-                getData(data);
+                var post_id = data.id;
+                for(i=0; i< image_arr.length;i++){
+                    $.ajax({
+                        method: "PUT",
+                        url : "api/image",
+                        data: {"post_id": post_id,
+                            "image_id": image_arr[i]},
+                    })
+                }
+                location.reload();
             },
 
             error: function(jqXHR, textStatus, errorThrown){
