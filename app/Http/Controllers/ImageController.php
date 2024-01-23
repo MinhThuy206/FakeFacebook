@@ -73,11 +73,9 @@ class ImageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($image, $post)
+    public function destroy($image)
     {
-        $post = Post::query() -> findOrFail($post);
-        $image = Image::query() -> findOrFail($image);
-        if(auth() -> id() == $post -> first() -> user_id ){
+        if(auth() -> id() == Image::query() -> where('id', $image) -> first() -> user_id){
             $image -> delete();
             return response() -> json(['message' =>'Remove success']);
         }

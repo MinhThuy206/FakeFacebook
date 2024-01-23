@@ -103,7 +103,7 @@ class PostController extends Controller
      */
     public function destroy($post)
     {
-        if(auth() -> id() == Post::query() -> where('id', $this -> route('post')) -> first() -> user_id){
+        if(auth() -> id() == Post::query() -> where('id', $post) -> first() -> user_id){
             $post = Post::query() -> findOrFail($post);
             $post -> delete();
         }
