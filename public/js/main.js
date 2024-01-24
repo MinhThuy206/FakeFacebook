@@ -1,3 +1,5 @@
+var image_arr;
+
 function getFormData($form) {
     var unindexed_array = $form.serializeArray();
     var indexed_array = {};
@@ -14,14 +16,14 @@ function getFormData($form) {
 function renderData(post) {
     html = `<div class="card" id="${post.id}" style="width: 50rem">
                <h2>${post.user}</h2>
-            <div class="btn-group">
-                  <button type="button" class="dropdown-toggle" data-bs-toggle="dropdown"" aria-expanded="false">
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li><button class="dropdown-item delete-post" type="button" data-id=${post.id}>Delete</button></li>
-                    <li><button class="dropdown-item edit-post" type="button" data-id=${post.id}>Edit</button></li>
-                  </ul>
-            </div>`;
+                <div class="btn-group">
+                      <button type="button" class="dropdown-toggle" data-bs-toggle="dropdown"" aria-expanded="false">
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-end">
+                        <li><button class="dropdown-item delete-post" type="button" data-id=${post.id}>Delete</button></li>
+                        <li><button class="dropdown-item edit-post" type="button" data-id=${post.id}>Edit</button></li>
+                      </ul>
+                </div>`;
 
     html += ` <div class="card-body">
      <p class="card-text">${post.content}</p>
@@ -30,7 +32,10 @@ function renderData(post) {
     post.images.forEach(function (item) {
         var url = "../" + item.url;
         // console.log(url);
-        html += `<img src="${url}"  width="200px"  alt="...">`
+        html += ` <div class="image-container">
+                        <img src="${url}"  width="200px"  alt="...">
+<!--                        <button class="btn btn-danger delete-image position-absolute top-0 end-0" data-id="${item.id}">&times;</button>-->
+                </div>`
     }, this)
 
     html += `</div>`
@@ -75,28 +80,62 @@ function getData(data) {
             $("button.edit-post").on('click', function () {
                 var postId = $(this).data("id");
                 var card = $('#' + postId);
+                card.find('.delete-image').show();
                 var currentContent = card.find('.card-text').text();
                 var currentImages = card.find('img').map(function () {
                     return $(this).attr('src');
                 }).get();
 
                 var editInterface = `
-                    <textarea class="form-control">${currentContent}</textarea>
-                    <input type="file" id="imageInput" multiple>
+                    <form id="postForm" xmlns="http://www.w3.org/1999/html">
+                        <textarea class="form-control">${currentContent}</textarea>
+                        <input type="file" id="image" multiple accept="image/*" onchange="xulyfile()" name="f1">
 
-                    <button class="btn btn-primary save-post" data-id="${postId}">Save</button>
+                        <button class="btn btn-primary save-post" type="submit" data-id="${postId}">Save</button>
+                    </form>
                 `;
 
                 card.find('.card-text').html(editInterface);
-                currentImages.forEach(function(image) {
-                    imageInput.before();
+
+                // currentImages.forEach(function(image) {
+                //     imageInput.before()
+                // });
+
+                $("button.save-post").on('click', function (event) {
+                    var postId = $(this).data('id');
+                    var card = $('#' + postId);
+
+                    // Lấy nội dung mới từ textarea
+                    var updatedContent = card.find('textarea').val();
+
+                    $.ajax({
+                        url: '/api/post/' + postId,
+                        type: 'PUT',
+                        data: { content: updatedContent },
+                        success: function(response) {
+                            console.log(1);
+                            console.log(image_arr);
+                            // card.find('.card-text').text(updatedContent);
+                            for (i = 0; i < image_arr.length; i++) {
+                                $.ajax({
+                                    method: "PUT",
+                                    url: "api/image",
+                                    data: {
+                                        "post_id": postId,
+                                        "image_id": image_arr[i]
+                                    },
+                                })
+                            }
+                            location.reload();
+                        },
+                        error: function(error) {
+                            console.error('Error updating post:', error);
+                        }
+                    });
                 });
 
             });
 
-            $("button.save-post").on('click', function (event) {
-
-            })
         },
         error: function (data, textStatus, jqXHR) {
             // if(jqXHR.status == 422){
@@ -110,19 +149,31 @@ function getData(data) {
 }
 
 
-var image_arr;
 
 function xulyfile() {
     image_arr = [];
     var arr = $('form#postForm input#image').prop('files');
-    console.log(arr);
+    var imagePreview = document.getElementById('imagePreview');
+    // console.log(arr);
     var formData;
     // console.log(arr);
     for (i = 0; i < arr.length; i++) {
         formData = new FormData();
         f = arr[i];
         formData.append('image', f);
-        // console.log( f.name, f.size, f.type );
+
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var imgElement = new Image();
+            imgElement.src = e.target.result;
+            imgElement.width = 200; // Đặt chiều rộng là 200px
+            imgElement.alt = 'Ảnh trước khi gửi';
+
+            // Thêm ảnh mới vào cuối danh sách các ảnh
+            imagePreview.appendChild(imgElement);
+        };
+        reader.readAsDataURL(f);
+
         $.ajax({
             contentType: false,
             method: "POST",
@@ -136,8 +187,9 @@ function xulyfile() {
             },
         })
     }
-    // console.log(image_arr);
+
 }
+
 
 $(document).ready(function () {
     $('form#login').on('submit', function (e) {

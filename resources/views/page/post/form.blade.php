@@ -14,6 +14,7 @@
 {{--            Chọn file--}}
             <input type="file" multiple accept="image/*" id="image" onchange="xulyfile()" name="f1">
 {{--        </form>--}}
+        <div id="imagePreview"></div>
 
         <div class="mb-1" id="error"></div>
         <button type="submit">Post</button>
