@@ -59,4 +59,28 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function friends(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this -> hasManyThrough(User::class,Friend::class, "user_id1", "id", "id", "user_id2");
+    }
+
+    public function pendingFriend(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this -> hasManyThrough(User::class,AddFriendHistory::class, "user_id1", "id", "id", "user_id2");
+    }
+
+    public function toArray(){
+        $array =[
+            'id' => $this -> id,
+            'name' => $this -> name,
+            'phone' => $this -> phone,
+            'email' => $this -> email,
+            'friends' =>  $this -> friends() -> count()
+        ];
+        return $array;
+    }
+
+
+
 }

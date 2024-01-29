@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateImageRequest;
+use App\Http\Requests\Post\StoreImageRequest;
+use App\Http\Requests\Post\UpdateImageRequest;
 use App\Models\Image;
-use App\Http\Requests\StoreImageRequest;
 use App\Models\Post;
 use Carbon\Carbon;
 

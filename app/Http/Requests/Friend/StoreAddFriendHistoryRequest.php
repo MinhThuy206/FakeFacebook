@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Friend;
 
-use App\Models\Post;
+use App\Enums\FriendshipStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdatePostRequest extends FormRequest
+class StoreAddFriendHistoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return auth() -> id() == Post::query() -> where('id', $this -> route('post')) -> first() -> user_id;
+        return true;
     }
 
     /**
@@ -23,10 +24,11 @@ class UpdatePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'content'    => [
+            'user_id2' => [
                 'required',
-                'string',
+                'exists:users,id',
             ],
         ];
     }
+
 }

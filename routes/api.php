@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FriendshipsController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\PostController;
 use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\CheckFriendship;
 use App\Http\Middleware\CheckLogin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,7 +29,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::get('/profile', [AuthController::class, 'profile'])->name('profile') ->middleware(CheckLogin::class);
 Route::group(['prefix'=>'post', 'middleware' => CheckLogin::class], function ($route){
     Route::post('/',[PostController::class, 'store']);
-    Route::get('/',[PostController::class, 'filter']);
+    Route::get('/',[PostController::class, 'filter']) -> middleware(CheckFriendship::class);
     Route::put('/{post}',[PostController::class, 'update']);
     Route::get('/{post}',[PostController::class, 'show']);
     Route::delete('/{post}',[PostController::class, 'destroy']);
@@ -41,3 +43,8 @@ Route::group(['prefix'=>'/image', 'middleware' => CheckLogin::class], function (
     Route::put('/',[ImageController::class, 'update']);
 });
 
+Route::group(['prefix'=>'/friend', 'middleware' => CheckLogin::class], function ($route){
+    Route::post('/', [FriendshipsController::class, 'store']);
+    Route::post('/accept/{friendships}', [FriendshipsController::class,'acceptFriend']);
+    Route::post('/reject/{friendships}', [FriendshipsController::class,'rejectFriend']);
+});
