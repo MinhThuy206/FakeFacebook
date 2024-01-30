@@ -29,7 +29,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::get('/profile', [AuthController::class, 'profile'])->name('profile') ->middleware(CheckLogin::class);
 Route::group(['prefix'=>'post', 'middleware' => CheckLogin::class], function ($route){
     Route::post('/',[PostController::class, 'store']);
-    Route::get('/',[PostController::class, 'filter']) -> middleware(CheckFriendship::class);
+    Route::get('/',[PostController::class, 'filter']);
     Route::put('/{post}',[PostController::class, 'update']);
     Route::get('/{post}',[PostController::class, 'show']);
     Route::delete('/{post}',[PostController::class, 'destroy']);

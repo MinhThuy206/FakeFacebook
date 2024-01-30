@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\FriendshipStatus;
 use App\Http\Requests\Post\FilterRequest;
 use App\Http\Requests\Post\StorePostRequest;
 use App\Http\Requests\Post\UpdatePostRequest;
@@ -15,7 +16,7 @@ class PostController extends Controller
 
     public function index()
     {
-        return view('page.post.form');
+
     }
 
     /**
@@ -23,7 +24,18 @@ class PostController extends Controller
      */
     public function filter(FilterRequest $request)
     {
+        $user = auth()->user();
         $posts = Post::query();
+
+        $posts->where(function ($query) use ($user) {
+            $query->where('user_id', $user->id)
+                ->orWhereIn('user_id', function ($subQuery) use ($user) {
+                    $subQuery->select('user_id2')
+                        ->from('friends')
+                        ->where('user_id1', $user->id);
+                });
+        });
+
         if ($request->has('user_id'))
             $posts = $posts->where("user_id", "==", $request->user_id);
         if (!$request->has('orderBy')) {

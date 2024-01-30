@@ -1,11 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Http\Requests\Friend\StoreAddFriendHistoryRequest;
 use App\Models\AddFriendHistory;
-
-//use App\Http\Requests\UpdateFriendshipsRequest;
 
 class FriendshipsController extends Controller
 {
@@ -31,14 +28,13 @@ class FriendshipsController extends Controller
     public function store(StoreAddFriendHistoryRequest $request)
     {
         $friendship = AddFriendHistory::create([
-            'user_id1' => auth()->id(),
             'user_id2' => $request->user_id2,
         ]);
 
         if(!$friendship){
             return response()->json(['message' => 'not exist'],422);
         }
-        return response()->json($friendship, 200);
+        return response()->json($friendship);
     }
 
     public function acceptFriend(AddFriendHistory $friendships){
@@ -68,13 +64,6 @@ class FriendshipsController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateFriendshipsRequest $request, AddFriendHistory $friendships)
-    {
-
-    }
 
     /**
      * Remove the specified resource from storage.

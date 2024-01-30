@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\FriendshipStatus;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -10,7 +11,7 @@ use Tests\TestCase;
 
 class FriendApiTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -47,11 +48,10 @@ class FriendApiTest extends TestCase
 
     public function test_addfriend_success()
     {
-        $response = $this->actingAs($this->user1)->json('post','/api/friend', [
-            'user_id2' => $this->user2->id
+        $response = $this->actingAs($this->user3)->json('post','/api/friend', [
+            'user_id2' => $this->user2->id,
         ]);
         $response ->assertStatus(200);
         print_r($response -> decodeResponseJson());
     }
-
 }

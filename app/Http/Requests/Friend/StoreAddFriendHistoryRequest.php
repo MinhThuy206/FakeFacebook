@@ -28,6 +28,13 @@ class StoreAddFriendHistoryRequest extends FormRequest
                 'required',
                 'exists:users,id',
             ],
+            'status' => [
+                Rule::in([
+                    FriendshipStatus::PENDING,
+                    FriendshipStatus::ACCEPTED,
+                    FriendshipStatus::REJECTED,
+                ]),
+            ]
         ];
     }
 
