@@ -36,3 +36,7 @@
     </div>
 
 @endsection
+
+@section('js')
+    <script src="{{asset('/js/register.js')}}"></script>
+@endsection

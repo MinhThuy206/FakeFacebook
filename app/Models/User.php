@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\FriendshipStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -62,25 +63,43 @@ class User extends Authenticatable implements JWTSubject
 
     public function friends(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
-        return $this -> hasManyThrough(User::class,Friend::class, "user_id1", "id", "id", "user_id2");
+        return $this->hasManyThrough(User::class, Friend::class, "user_id1", "id", "id", "user_id2");
     }
 
+    //danh sach nhung dua user1 gui loi ket ban cho
     public function pendingFriend(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
-        return $this -> hasManyThrough(User::class,AddFriendHistory::class, "user_id1", "id", "id", "user_id2");
+        return $this->hasManyThrough(User::class, AddFriendHistory::class, "user_id1", "id", "id", "user_id2");
     }
 
-    public function toArray(){
-        $array =[
-            'id' => $this -> id,
-            'name' => $this -> name,
-            'phone' => $this -> phone,
-            'email' => $this -> email,
-            'friends' =>  $this -> friends() -> count()
+    // danh sach nguoi gui kb cho user1
+    public function listAddFriends()
+    {
+        return $this->hasManyThrough(User::class, AddFriendHistory::class, "user_id2", "id", "id", "user_id1");
+    }
+
+    public function toArray()
+    {
+        $array = [
+            'id' => $this->id,
+            'name' => $this->name,
+            'phone' => $this->phone,
+            'email' => $this->email,
+            'friends' => $this->friends()->count()
         ];
+        if (auth()->id() != null && auth()->id() != $this->id) {
+            if ($this->friends()->where('id', '=', auth()->id())->exists()) {
+                $array['status'] = 'Accepted';
+            } else if ($this->pendingFriend()->where('user_id2', '=', auth()->id())->exists()) {
+                $array['status'] = 'Pending';
+            } else if ($this->listAddFriends()->where('user_id1', '=', auth()->id())->exists()) {
+                $array['status'] = 'Sent';
+            } else {
+                $array['status'] = 'null';
+            }
+        } else {
+            $array['status'] = 'not login';
+        }
         return $array;
     }
-
-
-
 }

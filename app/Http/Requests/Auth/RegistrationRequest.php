@@ -23,12 +23,12 @@ class RegistrationRequest extends FormRequest
     {
         return [
             'name' => 'required|string|between:2,100',
-            'email'    => [
+            'email' => [
                 'required',
                 'email',
                 'unique:users,email'
             ],
-            'phone'    => [
+            'phone' => [
                 'required',
                 'string',
                 'regex:/[0-9]{10}/',

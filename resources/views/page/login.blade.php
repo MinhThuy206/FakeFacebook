@@ -26,3 +26,7 @@
     </div>
 
 @endsection
+
+@section('js')
+    <script src="{{asset('/js/login.js')}}"></script>
+@endsection

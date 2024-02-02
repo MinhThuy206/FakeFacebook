@@ -42,6 +42,7 @@ class FriendTest extends TestCase
 
         auth()->loginUsingId($user1->id);
 
+
         $friend1 = AddFriendHistory::query()->create([
             'user_id2' => $user2 -> id,
         ]);
@@ -50,6 +51,7 @@ class FriendTest extends TestCase
             'user_id2' => $user3 -> id,
         ]);
 
+        print("Danh sach nhung nguoi user1 gui ket ban");
         $friends = $user1->pendingFriend()->get();
         $array = array();
         foreach ($friends as $friend){
@@ -57,9 +59,20 @@ class FriendTest extends TestCase
         }
         print_r($array);
 
+        print("Danh sach nhung nguoi gui ket ban cho user2");
+        //List user add friend
+        auth()->loginUsingId($user2->id);
+        $listFriends = $user2 -> listAddFriends() -> get();
+        $array = array();
+        foreach ($listFriends as $friend){
+            $array[]= $friend -> toArray();
+        }
+        print_r($array);
+
         $this->assertTrue(true);
 
         // accept friend
+        auth()->loginUsingId($user1->id);
         $friend1 -> accept();
         $friend2 -> accept();
         $friends = $user1->friends()->get();
@@ -67,8 +80,11 @@ class FriendTest extends TestCase
         foreach ($friends as $friend){
             $array[]= $friend -> toArray();
         }
+
+        print("danh sach nhung nguoi da ket ban voi user1");
         print_r($array);
 
+        print("User1");
         print_r($user1->toArray());
     }
 }

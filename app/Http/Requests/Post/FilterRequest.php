@@ -26,7 +26,7 @@ class FilterRequest extends Request
     {
         return [
             'user_id' => [
-                'exists:users,id'
+                'exists:users,id',
             ],
 
             'orderBy' => [

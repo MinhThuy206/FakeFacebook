@@ -54,4 +54,6 @@ class FriendApiTest extends TestCase
         $response ->assertStatus(200);
         print_r($response -> decodeResponseJson());
     }
+
+
 }

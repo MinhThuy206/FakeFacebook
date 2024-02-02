@@ -46,24 +46,6 @@ class AddFriendHistory extends Model
         return $array;
     }
 
-
-    public function accept()
-    {
-        $this -> update(['status' => FriendshipStatus::ACCEPTED]);
-        Friend::query() ->insert([[
-            "user_id1" => $this->user_id1,
-            "user_id2"  => $this -> user_id2
-        ],[
-            "user_id1" => $this->user_id2,
-            "user_id2"  => $this -> user_id1
-        ]]);
-    }
-
-    public function reject()
-    {
-        $this -> update(['status' => FriendshipStatus::REJECTED]);
-    }
-
     public static function boot()
     {
         parent::boot();
