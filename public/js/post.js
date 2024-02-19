@@ -1,7 +1,7 @@
 var image_arr;
 
 function renderData(post) {
-    html = `<div class="card mb-6" id="${post.id}" style=" max-width: 100rem; margin: auto">
+    html = `<div class="card mb-6" id="${post.id}" style="max-width: 100rem; margin: auto">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4>${post.user}</h4>
                     <div class="btn-group">
@@ -17,21 +17,30 @@ function renderData(post) {
 
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <p class="card-text">${post.content}</p>
-                </div>`;
+                </div>
 
-    html += `<div class="card-body d-flex justify-content-center align-items-center">`;
-    post.images.forEach(function (item) {
-        var url = "../" + item.url;
-        html += ` <div class="image-container">
-                        <img src="${url}"  width="100px" height="100px" alt="...">
-                </div>`
-    }, this);
+                <div class="card-body d-flex flex-wrap justify-content-center">`; // Sử dụng flexbox để tự động sắp xếp các ảnh
+
+    // Kiểm tra nếu chỉ có một ảnh thì đặt kích thước cho nó bằng với kích thước của ô chứa
+    if (post.images.length === 1) {
+        var url = "../" + post.images[0].url;
+        html += `<div class="image-container" style="width: 100%; height: 800px; margin: 5px;"> <!-- Thiết lập kích thước và margin -->
+                    <img style="width: 100%; height: 100%; object-fit: cover;" src="${url}" alt="...">
+                </div>`;
+    } else {
+        post.images.forEach(function (item) {
+            var url = "../" + item.url;
+            html += `<div class="image-container" style="width: 200px; height: 200px; margin: 5px;"> <!-- Thiết lập kích thước và margin -->
+                        <img style="width: 100%; height: 100%; object-fit: cover;" src="${url}" alt="...">
+                    </div>`;
+        }, this);
+    }
     html += `</div>
-        </div>
-        `
+        </div>`;
 
     return html;
 }
+
 
 
 function xulyfile() {
