@@ -4,8 +4,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FriendshipsController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\PostController;
-use App\Http\Middleware\Authenticate;
-use App\Http\Middleware\CheckFriendship;
 use App\Http\Middleware\CheckLogin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

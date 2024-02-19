@@ -11,21 +11,15 @@ use App\Models\User;
 
 class FriendshipsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+        return view('page.friend.friends');
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -42,6 +36,9 @@ class FriendshipsController extends Controller
         return response()->json($friendship);
     }
 
+    /**
+     * Add friend and save to database.
+     */
     public function acceptFriend($friendships)
     {
         if (auth()->id() == AddFriendHistory::query()->where('user_id1', $friendships)->first()->user_id2) {
@@ -71,6 +68,9 @@ class FriendshipsController extends Controller
         }
     }
 
+    /**
+     * filter list user.
+     */
     public function filterUser(FilterRequest $request)
     {
         $users = User::query();
@@ -112,7 +112,9 @@ class FriendshipsController extends Controller
         return response()->json($response);
     }
 
-
+    /**
+     *  Filter list friend
+     */
     public function filterFriend(FilterRequest $request)
     {
         $users = User::query();
@@ -153,22 +155,6 @@ class FriendshipsController extends Controller
         }
         return response()->json($response);
     }
-    /**
-     * Display the specified resource.
-     */
-    public function show(AddFriendHistory $friendships)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(AddFriendHistory $friendships)
-    {
-        //
-    }
-
 
     /**
      * Remove request add friend.
@@ -191,17 +177,11 @@ class FriendshipsController extends Controller
      * Remove friend.
      */
     public function deleteFriend($user){
-        if(auth()->id()==AddFriendHistory::query()->where('user_id1', $user)->first()->user_id2){
-            $friend1 =Friend::query() -> where('user_id1', $user);
-            $friend1->delete();
+        $friend1 =Friend::query() -> where('user_id1', $user);
+        $friend1->delete();
 
-            $friend2 = Friend::query() -> where('user_id2', $user);
-            $friend2->delete();
-
-
-            return response()->json(['message' => 'Friendship deleted successfully']);
-        }else{
-            return response()->json(['message' => 'Friendship deleted fail']);
-        }
+        $friend2 = Friend::query() -> where('user_id2', $user);
+        $friend2->delete();
+        return response()->json(['message' => 'Friendship deleted successfully']);
     }
 }
