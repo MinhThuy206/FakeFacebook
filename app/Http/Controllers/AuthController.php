@@ -14,13 +14,13 @@ class AuthController extends Controller
 {
     public function formLogin()
     {
-        return view('page.login');
+        return view('page.auth.login');
     }
 
     public function logout(Request $request)
     {
         $request -> session() -> invalidate();
-        return view('page.home');
+        return view('page.auth.login');
     }
 
     public function login(LoginRequest $request)
@@ -37,7 +37,7 @@ class AuthController extends Controller
 
     public function formRegister()
     {
-        return view('page.register');
+        return view('page.auth.register');
     }
 
     public function register(RegistrationRequest $request)
