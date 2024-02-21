@@ -38,6 +38,10 @@ Route::group(['prefix' => '/image', 'middleware' => CheckLogin::class], function
     Route::post('/', [ImageController::class, 'store']);
     Route::delete('/{image}', [ImageController::class, 'destroy']);
     Route::put('/', [ImageController::class, 'update']);
+    Route::put('/avatar/{avatar}', [ImageController::class, 'storeAvt']);
+    Route::put('/cover/{cover}', [ImageController::class, 'storeCover']);
+    Route::get('media/avatar', [ImageController::class, 'filterAvatarImage']);
+    Route::get('media/cover', [ImageController::class, 'filterCoverImage']);
 });
 
 Route::group(['prefix' => '/friend', 'middleware' => CheckLogin::class], function ($route) {
@@ -47,5 +51,5 @@ Route::group(['prefix' => '/friend', 'middleware' => CheckLogin::class], functio
     Route::get('/user', [FriendshipsController::class, 'filterUser']);
     Route::get('/friend', [FriendshipsController::class, 'filterFriend']);
     Route::delete('/deleteFriend/{user}', [FriendshipsController::class, 'deleteFriend']);
-    Route::delete('/delete/{user}',[FriendshipsController::class,'deleteRequestAddFriend']);
+    Route::delete('/delete/{user}', [FriendshipsController::class, 'deleteRequestAddFriend']);
 });

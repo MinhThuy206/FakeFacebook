@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Post;
 
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

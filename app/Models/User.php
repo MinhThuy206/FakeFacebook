@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Enums\FriendshipStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -24,6 +22,8 @@ class User extends Authenticatable implements JWTSubject
         'phone',
         'email',
         'password',
+        'avatar_id',
+        'cover_id'
     ];
 
     /**
@@ -78,6 +78,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasManyThrough(User::class, AddFriendHistory::class, "user_id2", "id", "id", "user_id1");
     }
 
+    public function imagesAvt()
+    {
+        return $this->hasMany(Image::class);
+    }
+
     public function toArray()
     {
         $array = [
@@ -85,7 +90,10 @@ class User extends Authenticatable implements JWTSubject
             'name' => $this->name,
             'phone' => $this->phone,
             'email' => $this->email,
-            'friends' => $this->friends()->count()
+            'friends' => $this->friends()->count(),
+            'avatar_id' => $this->avatar_id,
+            'cover_id' => $this->cover_id,
+            'avatar_url' => $this->imagesAvt()->find($this->avatar_id)->url,
         ];
         if (auth()->id() != null && auth()->id() != $this->id) {
             if ($this->friends()->where('id', '=', auth()->id())->exists()) {
