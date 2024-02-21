@@ -9,10 +9,10 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-center  align-items-center" id="navbarSupportedContent">
-            <a href="{{ route('formpost') }}" class="nav-link">
+            <a href="{{ route('formpost') }}" class="nav-link posts">
                 <i class="material-icons" style="font-size:36px; margin-right: 100px;">home</i>
             </a>
-            <a href="{{ route('formfriend') }}" class="nav-link">
+            <a href="{{ route('formfriend') }}" class="nav-link friends" id="friends">
                 <i class="material-icons" style="font-size:36px; margin-right: 100px;">people</i>
             </a>
             <a href="#" class="nav-link">

@@ -1,11 +1,12 @@
 function cardUser(user) {
+
     let html = '';
 
     html += `
         <div class="col-lg-3 col-md-4 col-sm-6 mb-3"> <!-- Thay đổi số lượng cột tại đây -->
             <div class="card" id="${user.id}" style="height: 350px; max-width: 240px" >
                 <div class="card-image">
-                    <img style="max-width: 100%;height: 206px;object-fit: cover;" src="../image/1708316821.jpg" class="card-img-top" alt="...">
+                    <img style="max-width: 100%;height: 206px;object-fit: cover;" src="../${user.avatar_url}" class="card-img-top" alt="">
                 </div>
                 <div class="card-body">
                     <h6 class="card-title">${user.name}</h6>
@@ -40,6 +41,7 @@ function getDataUser(data) {
         headers: {'Accept': 'application/json'},
         success: function (data, textStatus, jqXHR) {
             var users = data.data;
+            console.log(users);
             var htmlContent = '';
             users.forEach(function (user, index) {
                 // Nếu là cột đầu tiên hoặc là cột thứ tư, thêm một hàng mới
@@ -266,3 +268,6 @@ function loadFriendButton() {
         })
     })
 }
+
+
+
