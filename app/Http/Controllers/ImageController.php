@@ -46,7 +46,6 @@ class ImageController extends Controller
                 "image_id" => $avatar,
                 "album_id" => $avatar_image->id
             ]);
-            return response()->json(['message' => 'Avatar image upload success', 'avatar' => $avatar]);
         } else {
             $image = AlbumMeta::query()->create([
                 "name" => "avatar",
@@ -57,8 +56,8 @@ class ImageController extends Controller
                 "image_id" => $avatar,
                 "album_id" => $image->id
             ]);
-            return response()->json(['message' => 'Avatar image not found'], 404);
         }
+        return response()->json(['message' => 'Avatar image upload success', 'avatar' => $avatar]);
     }
 
     /**
@@ -128,7 +127,6 @@ class ImageController extends Controller
                 "image_id" => $cover,
                 "album_id" => $cover_image->id
             ]);
-            return response()->json(['message' => 'Cover image upload success', 'cover'=>$cover]);
         } else {
             $image = AlbumMeta::query()->create([
                 "name" => "cover",
@@ -139,8 +137,9 @@ class ImageController extends Controller
                 "image_id" => $cover,
                 "album_id" => $image->id
             ]);
-            return response()->json(['message' => 'Cover image upload success', 'cover'=>$cover]);
         }
+
+        return response()->json(['message' => 'Cover image upload success', 'cover'=>$cover]);
     }
 
     /**

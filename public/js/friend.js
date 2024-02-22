@@ -4,15 +4,21 @@ function cardUser(user) {
 
     html += `
         <div class="col-lg-3 col-md-4 col-sm-6 mb-3"> <!-- Thay đổi số lượng cột tại đây -->
-            <div class="card" id="${user.id}" style="height: 350px; max-width: 240px" >
-                <div class="card-image">
-                    <img style="max-width: 100%;height: 206px;object-fit: cover;" src="../${user.avatar_url}" class="card-img-top" alt="">
-                </div>
-                <div class="card-body">
-                    <h6 class="card-title">${user.name}</h6>
-                    <p class="card-text">${user.friends} friend</p>
-                     <div class="d-flex justify-content-between align-items-center">`
+            <div class="card" id="${user.id}" style="height: 350px; max-width: 240px" >`
 
+        if(user.avatar_url == null){
+            html+= `<div class="card-image" style="background-color: #cccccc;max-width: 100%;height: 206px">
+                `
+        }else{
+            html+= `<div class="card-image">
+                        <img style="max-width: 100%;height: 206px;object-fit: cover;" src="../${user.avatar_url}" class="card-img-top" alt="">`;
+        }
+
+    html+=`</div>
+        <div class="card-body">
+            <h6 class="card-title">${user.name}</h6>
+            <p class="card-text">${user.friends} friend</p>
+            <div class="d-flex justify-content-between align-items-center">`
 
     if (user.status === 'Accepted') {
         html += `<button  class="btn btn-danger deleteFriendBtn"  data-id="${user.id}">Delete Friend</button>`

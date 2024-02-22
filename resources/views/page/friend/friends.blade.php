@@ -30,7 +30,7 @@
             background-color: #f0f0f0; /* Màu nền khi hover */
         }
     </style>
-    <div class="container-fluid" style="margin-top: 56px; display: flex; flex-direction: column;">
+    <div class="container-fluid" style="margin-top: 56px; display: flex; flex-direction: column;height: 100vh">
         <div class="row" style="flex: 1;">
             <div class="col-md-3" id="session1" >
                 <h4>Bạn bè</h4>

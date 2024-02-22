@@ -83,6 +83,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Image::class);
     }
 
+    public function imagesCover()
+    {
+        return $this->hasMany(Image::class);
+    }
+
     public function toArray()
     {
         $array = [
@@ -93,8 +98,21 @@ class User extends Authenticatable implements JWTSubject
             'friends' => $this->friends()->count(),
             'avatar_id' => $this->avatar_id,
             'cover_id' => $this->cover_id,
-            'avatar_url' => $this->imagesAvt()->find($this->avatar_id)->url,
         ];
+
+        if ($this->avatar_id) {
+            $avatar = $this->imagesAvt()->find($this->avatar_id);
+            $array['avatar_url'] = $avatar ? $avatar->url : null;
+        } else {
+            $array['avatar_url'] = null;
+        }
+
+        if ($this->cover_id) {
+            $cover = $this->imagesCover()->find($this->cover_id);
+            $array['cover_url'] = $cover ? $cover->url : null;
+        } else {
+            $array['cover_url'] = null;
+        }
         if (auth()->id() != null && auth()->id() != $this->id) {
             if ($this->friends()->where('id', '=', auth()->id())->exists()) {
                 $array['status'] = 'Accepted';

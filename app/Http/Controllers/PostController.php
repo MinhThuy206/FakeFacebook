@@ -11,15 +11,6 @@ use App\Models\Post;
 class PostController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-
-    public function index()
-    {
-
-    }
-
-    /**
      *  get post by filter
      */
     public function filter(FilterRequest $request)

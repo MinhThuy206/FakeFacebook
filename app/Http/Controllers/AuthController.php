@@ -54,6 +54,11 @@ class AuthController extends Controller
         return response() -> json(['message'=>'Registration success']);
     }
 
+    function viewProfile($userId)
+    {
+        $user = User::find($userId);
+        return view('page.auth.profile', compact('user'));
+    }
 
     function profile()
     {
