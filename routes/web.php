@@ -30,12 +30,6 @@ Route::get('/post', [PostController::class, 'create'])->name('formpost')->middle
 
 Route::get('/friends', [FriendshipsController::class, 'create'])->name('formfriend')->middleware(CheckLogin::class);
 
-Route::get('/', [PostController::class, 'index'])->middleware(CheckLogin::class);
-
 Route::get('/', [AuthController::class, 'logout'])->name('logout')->middleware(CheckLogin::class);
 
-
-
-
-
-//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get("/profile/{username}", [AuthController::class,'viewProfile'])->name('profile');

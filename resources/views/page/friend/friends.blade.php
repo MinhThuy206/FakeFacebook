@@ -23,6 +23,7 @@
         .option4 p i {
             margin-right: 5px;
         }
+
         .option1 p:hover,
         .option2 p:hover,
         .option3 p:hover,
@@ -32,7 +33,7 @@
     </style>
     <div class="container-fluid" style="margin-top: 56px; display: flex; flex-direction: column;height: 100vh">
         <div class="row" style="flex: 1;">
-            <div class="col-md-3" id="session1" >
+            <div class="col-md-3" id="session1">
                 <h4>Bạn bè</h4>
 
                 <div class="option1">
@@ -67,10 +68,13 @@
         </div>
     </div>
 
-
 @endsection
 
 @section('js')
+    <script>
+        let username = "{{ auth()->user()->username }}";
+        let profileUrlBase = "{{ route('profile', ['username' => ':username']) }}";
+    </script>
     <script src="{{asset('/js/friend.js')}}"></script>
     <script>
         $(document).ready(function () {

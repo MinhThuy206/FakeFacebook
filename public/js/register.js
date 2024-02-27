@@ -59,6 +59,27 @@ $(document).ready(function () {
                         $('#name-error').html('');
                     }
 
+                    if (error.username) {
+                        var data;
+                        data = '';
+                        error.username.forEach(function (item) {
+                            data += item + '</br>';
+                        }, this)
+                        $('#username-error').html(data);
+                    } else {
+                        $('#username-error').html('');
+                    }
+
+                    if (error.confirm_password) {
+                        var data = '';
+                        error.confirm_password.forEach(function (error) {
+                            data += error + '</br>';
+                        });
+                        $('#confirm_password-error').html(data);
+                    } else {
+                        $('#confirm_password-error').html('');
+                    }
+
                 } else {
                     $('#error').html(jqXHR.responseJSON.message);
                 }

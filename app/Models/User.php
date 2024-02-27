@@ -23,7 +23,8 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'avatar_id',
-        'cover_id'
+        'cover_id',
+        'username',
     ];
 
     /**
@@ -92,6 +93,7 @@ class User extends Authenticatable implements JWTSubject
     {
         $array = [
             'id' => $this->id,
+            'username' => $this->username,
             'name' => $this->name,
             'phone' => $this->phone,
             'email' => $this->email,

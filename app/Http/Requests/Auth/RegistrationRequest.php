@@ -42,6 +42,16 @@ class RegistrationRequest extends FormRequest
                 'regex:/[A-Z]/',      // must contain at least one uppercase letter
                 'regex:/[0-9]/',      // must contain at least one digit
                 'regex:/[@$!%*#?&]/', // must contain a special character
+                'confirmed'
+            ],
+            'username' => [
+                'required',
+                'string',
+                'unique:users,email'
+            ],
+            'password_confirmation' => [
+                'string',
+                'same:password'
             ]
         ];
     }

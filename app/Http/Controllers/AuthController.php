@@ -19,7 +19,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request -> session() -> invalidate();
+        $request->session()->invalidate();
         return view('page.auth.login');
     }
 
@@ -29,7 +29,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => $request->password
         ], true)) {
-            return response()->json(['message' => 'login success']) -> withCookie(cookie('remember', \auth()->user()->getRememberToken()));
+            return response()->json(['message' => 'login success'])->withCookie(cookie('remember', \auth()->user()->getRememberToken()));
         } else {
             return response()->json(['message' => 'login fail'], 403);
         }
@@ -43,6 +43,7 @@ class AuthController extends Controller
     public function register(RegistrationRequest $request)
     {
         $user = User::query()->create([
+            'username' => $request->username,
             'email' => $request->email,
             'name' => $request->name,
             'password' => $request->password,
@@ -51,13 +52,14 @@ class AuthController extends Controller
         if (!$user) {
             return redirect(route('formregister'))->with("error", "Registration failed, try again");
         }
-        return response() -> json(['message'=>'Registration success']);
+        return response()->json(['message' => 'Registration success']);
     }
 
-    function viewProfile($userId)
+    function viewProfile($username)
     {
-        $user = User::find($userId);
-        return view('page.auth.profile', compact('user'));
+        $user = User::where('username', $username)->first();
+        $data = $user->toArray();
+        return view('page.auth.profile', compact('data'));
     }
 
     function profile()

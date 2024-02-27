@@ -1,22 +1,34 @@
 function cardUser(user) {
 
     let html = '';
+    let profileUrl = profileUrlBase.replace(':username', user.username);
 
     html += `
         <div class="col-lg-3 col-md-4 col-sm-6 mb-3"> <!-- Thay đổi số lượng cột tại đây -->
             <div class="card" id="${user.id}" style="height: 350px; max-width: 240px" >`
 
-        if(user.avatar_url == null){
-            html+= `<div class="card-image" style="background-color: #cccccc;max-width: 100%;height: 206px">
+    if (user.avatar_url == null) {
+        html += `<div class="card-image">
+                    <img style="max-width: 100%;height: 206px;object-fit: cover;" src="../image/avatar-trang.jpg" class="card-img-top" alt="">
                 `
-        }else{
-            html+= `<div class="card-image">
-                        <img style="max-width: 100%;height: 206px;object-fit: cover;" src="../${user.avatar_url}" class="card-img-top" alt="">`;
-        }
+    } else {
+        html += `<a href="${profileUrl}">
+                    <div class="card-image">
+                        <img style="max-width: 100%;height: 206px;object-fit: cover;" src="../${user.avatar_url}" class="card-img-top" alt="">
+                    </a>
+    `;
+    }
 
-    html+=`</div>
+    html += `</div>
         <div class="card-body">
+        <a href="${profileUrl}" style="color: #000; text-decoration: none;">
             <h6 class="card-title">${user.name}</h6>
+             <style>
+             .card-title:hover {
+                 text-decoration: underline;
+             }
+    </style>
+        </a>
             <p class="card-text">${user.friends} friend</p>
             <div class="d-flex justify-content-between align-items-center">`
 
