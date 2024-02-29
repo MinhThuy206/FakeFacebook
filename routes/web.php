@@ -32,4 +32,4 @@ Route::get('/friends', [FriendshipsController::class, 'create'])->name('formfrie
 
 Route::get('/', [AuthController::class, 'logout'])->name('logout')->middleware(CheckLogin::class);
 
-Route::get("/profile/{username}", [AuthController::class,'viewProfile'])->name('profile');
+Route::get("/profile/{username}", [AuthController::class,'viewProfile'])->name('profile')->middleware(CheckLogin::class);

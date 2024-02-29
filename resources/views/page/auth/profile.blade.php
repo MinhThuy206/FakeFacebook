@@ -120,6 +120,39 @@
             height: 100%;
             object-fit: cover; /* Đảm bảo ảnh đại diện nằm trọn trong khung chứa */
         }
+
+        /* CSS cho overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.2); /* Màu nền mờ */
+            z-index: 999; /* Đảm bảo nằm trên mọi phần tử khác */
+            display: none; /* Mặc định ẩn overlay */
+        }
+
+        /* CSS cho modal */
+        .modal {
+            position: fixed;
+            top: 50%; /* Đặt phần tử ở giữa theo chiều dọc */
+            left: 50%; /* Đặt phần tử ở giữa theo chiều ngang */
+            transform: translate(-50%, -50%); /* Dịch chuyển modal để nó được căn giữa trang */
+            background-color: white;
+            z-index: 1000; /* Đảm bảo nằm trên overlay */
+            padding: 20px;
+            border-radius: 5px;
+            display: none; /* Mặc định ẩn modal */
+            max-width: 50%; /* Đặt chiều rộng tối đa của modal */
+            max-height: 80%; /* Đặt chiều cao tối đa của modal */
+            overflow: auto; /* Cho phép cuộn nếu nội dung quá lớn */
+        }
+
+        .type-image{
+            margin-bottom: -14px;
+        }
+
     </style>
 
     <div class="container-fluid" style="margin-top: 56px;">
@@ -138,16 +171,10 @@
                         <div class="username">{{ $data['name'] }}</div>
                         <div class="user-friends">{{ $data['friends'] }} bạn bè</div>
                     </div>
-                    @if(auth()->user()->username == $data['username'])
+                    @if(auth()->user()->id == $data['id'])
                         <div class="edit-profile">
                             <button class="edit-profile-button">Chỉnh sửa trang cá nhân</button>
-
-                            <div id="edit-menu" style="display: none;">
-                                <a href="#" class="edit-option">Chỉnh sửa ảnh bìa</a>
-                                <a href="#" class="edit-option">Chỉnh sửa ảnh đại diện</a>
-                            </div>
                         </div>
-
                     @endif
                 </div>
 
@@ -178,33 +205,57 @@
             </div>
         </div>
     </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="modal" id="editModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Chỉnh sửa trang cá nhân</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <p class="type-image">Ảnh đại diện</p>
+                    <div class="container text-center">
+                        <form id="postForm">
+                            @csrf
+                            <label for="content"></label>
+                            <input id="content" name="content" class="form-control"
+                                   style="width: 100%;height: 80px">
+                            <div class="mt-3 d-flex">
+                                <input type="file" multiple accept="image/*" id="image" onchange="xulyfile()" name="f1">
+                                <button type="submit" class="btn btn-primary ml-3">Thêm</button>
+                            </div>
+                            <div id="imagePreview"></div>
+                            <div class="mb-1" id="error"></div>
+                        </form>
+                    </div>
+
+{{--                    <p class="type-image">Ảnh bìa</p>--}}
+{{--                    <div class="container text-center">--}}
+{{--                        <form id="postForm">--}}
+{{--                            @csrf--}}
+{{--                            <label for="content"></label>--}}
+{{--                            <input id="content" name="content" class="form-control"--}}
+{{--                                      style="max-width: 100%; height: 80px">--}}
+{{--                            <br>--}}
+{{--                            <div class="mt-3 d-flex">--}}
+{{--                                <input type="file" multiple accept="image/*" id="image" onchange="xulyfile()" name="f1">--}}
+{{--                                <button type="submit" class="btn btn-primary ml-3">Thêm</button>--}}
+{{--                            </div>--}}
+{{--                            <div id="imagePreview"></div>--}}
+{{--                            <div class="mb-1" id="error"></div>--}}
+{{--                        </form>--}}
+{{--                    </div>--}}
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('js')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var profileOptions = document.querySelectorAll('.profile-option');
-            profileOptions.forEach(function (option) {
-                option.addEventListener("click", function (event) {
-                    event.preventDefault();
-                    profileOptions.forEach(function (opt) {
-                        opt.classList.remove('active');
-                    });
-                    option.classList.add('active');
-                });
-            });
-
-            var editProfileButton = document.getElementById('edit-profile-button');
-            var editMenu = document.getElementById('edit-menu');
-            editProfileButton.addEventListener('click', function () {
-                if (editMenu.style.display === 'none') {
-                    editMenu.style.display = 'block';
-                } else {
-                    editMenu.style.display = 'none';
-                }
-            });
-        });
-    </script>
     <script src="{{asset('/js/profile.js')}}"></script>
 @endsection
 

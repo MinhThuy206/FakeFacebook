@@ -59,12 +59,7 @@ class AuthController extends Controller
     {
         $user = User::where('username', $username)->first();
         $data = $user->toArray();
+        session(['user' => $user]);
         return view('page.auth.profile', compact('data'));
-    }
-
-    function profile()
-    {
-        $user = User::query()->where('id', Auth::id())->first();
-        return response()->json(['name' => $user->name, 'email' => $user->email, 'phone' => $user->phone]);
     }
 }

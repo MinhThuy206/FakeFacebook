@@ -181,6 +181,7 @@ $(document).ready(function () {
             success: function (data, textStatus, jqXHR) {
                 if (typeof image_arr != 'undefined') {
                     var post_id = data.id;
+                    console.log(image_arr[i])
                     for (i = 0; i < image_arr.length; i++) {
                         $.ajax({
                             method: "PUT",
