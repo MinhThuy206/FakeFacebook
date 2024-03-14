@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\FriendshipStatus;
 use App\Http\Requests\Post\FilterRequest;
 use App\Http\Requests\Post\StorePostRequest;
 use App\Http\Requests\Post\UpdatePostRequest;
@@ -25,6 +24,45 @@ class PostController extends Controller
                         ->from('friends')
                         ->where('user_id1', $user->id);
                 });
+        });
+
+        if ($request->has('user_id'))
+            $posts = $posts->where("user_id", "==", $request->user_id);
+        if (!$request->has('orderBy')) {
+            $request->orderBy = "created_at";
+        }
+        if (!$request->has('order')) {
+            $request->order = "desc";
+        }
+
+        $posts = $posts->orderBy($request->orderBy, $request->order)
+            ->paginate($request->size ?? 10,'*',
+                'page', $request->page ?? 0);
+
+        $response = [
+            "data" => array(),
+            "current_page" => $posts->currentPage(),
+            "last_page" => $posts->lastPage(),
+            "per_page" => $posts->perPage(),
+            "total" => $posts->total()
+        ];
+
+        foreach($posts -> items() as $post){
+            $response['data'][] = $post -> toArray();
+        }
+        return response() -> json($response);
+    }
+
+    /**
+     *  get post of auth user by filter
+     */
+    public function filterPost(FilterRequest $request)
+    {
+        $user = auth()->user();
+        $posts = Post::query();
+
+        $posts->where(function ($query) use ($user) {
+            $query->where('user_id', $user->id);
         });
 
         if ($request->has('user_id'))

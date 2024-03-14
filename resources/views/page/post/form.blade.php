@@ -4,7 +4,7 @@
 @endsection
 @section('content')
     <div class="container-fluid" style="margin-top: 56px; display: flex; flex-direction: column;">
-        <div class="row" style="flex: 1;">
+        <div class="row content" style="flex: 1; background-color: #cccccc">
             <div class="col-md-3" id="session1" style="background-color: #cbd5e0; height: 100vh;">
                 <h4>Add Friend</h4>
             </div>
@@ -28,7 +28,7 @@
                 </div>
                 <div class="divider" style="background-color: #cbd5e0; height: 5px; padding: 0 12px"></div>
 
-                <div class="container text-center" style="background-color: #cbd5e0; margin-top: 5px;">
+                <div class="container text-center" style="margin-top: 5px;">
                     <div id="postList">
                     </div>
                 </div>

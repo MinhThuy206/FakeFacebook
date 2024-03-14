@@ -94,14 +94,13 @@ function getData(data) {
             $('#postList').html(htmlContent);
             $("button.delete-post").on('click', function () {
                 var postId = $(this).data("id");
-                console.log(postId);
                 $.ajax({
                     method: "DELETE",
                     url: "/api/post/" + postId,
                     headers: {'Accept': 'application/json'},
 
                     success: function (data, textStatus, jqXHR) {
-                        location.reload();
+                        getData(data)
                     },
                     error: function (data, textStatus, jqXHR) {
                         console.log(data);
@@ -158,7 +157,6 @@ function getData(data) {
 
                 });
             });
-
         },
         error: function (data, textStatus, jqXHR) {
             console.log(1)
@@ -166,12 +164,11 @@ function getData(data) {
     })
 }
 
-
 $(document).ready(function () {
     $('form#postForm').on('submit', function (event) {
         event.preventDefault();
         data = getFormData($(this));
-        $('#error').html('');
+        $('#content').html(' ');
         $.ajax({
             method: "POST",
             url: "/api/post",
@@ -181,18 +178,19 @@ $(document).ready(function () {
             success: function (data, textStatus, jqXHR) {
                 if (typeof image_arr != 'undefined') {
                     var post_id = data.id;
-                    console.log(image_arr[i])
                     for (i = 0; i < image_arr.length; i++) {
                         $.ajax({
                             method: "PUT",
-                            url: "api/image",
+                            url: "/api/image",
                             data: {
                                 "post_id": post_id,
                                 "image_id": image_arr[i]
                             },
                             headers: {'Accept': 'application/json'},
                             success: function (data, textStatus, jqXHR) {
-                                location.reload();
+                                getData(data);
+                                $('form#postForm').trigger("reset");
+                                console.log("Upload post success")
                             },
                             error: function (data, textStatus, jqXHR) {
                                 console.log(data);
@@ -200,8 +198,10 @@ $(document).ready(function () {
                         })
                     }
                 } else {
-                    location.reload();
+                    getData(data);
+                    $('form#postForm').trigger("reset");
                 }
+
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 if (jqXHR.status == 422) {
