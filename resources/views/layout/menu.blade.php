@@ -42,6 +42,7 @@
                 <a href="{{ route('formpost') }}" class="nav-link menu-option" id="friends">
                     <i class="material-icons" style="font-size:36px;">home</i>
                 </a>
+{{--                <button class="home" style="font-size:24px"><i class="material-icons" type="button" style="font-size:36px;">home</i></button>--}}
 
                 <a href="{{ route('formfriend') }}" class="nav-link menu-option" id="friends">
                     <i class="material-icons" style="font-size:36px;">people</i>
@@ -66,8 +67,14 @@
             <a href="#" class="nav-link">
                 <i class="material-icons" style="font-size:36px">notifications</i>
             </a>
+
+            <a href="{{route('logout')}}">
+                <button class="logout">Đăng xuất</button>
+            </a>
         </div>
     </div>
 </nav>
+
+
 
 

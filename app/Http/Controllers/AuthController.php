@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegistrationRequest;
 use App\Models\User;
-use http\Cookie;
 use http\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class AuthController extends Controller
 {
@@ -20,7 +20,8 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $request->session()->invalidate();
-        return view('page.auth.login');
+        Cookie::queue(Cookie::forget('remember'));
+        return redirect(route('formlogin'));
     }
 
     public function login(LoginRequest $request)
@@ -59,7 +60,6 @@ class AuthController extends Controller
     {
         $user = User::where('username', $username)->first();
         $data = $user->toArray();
-        session(['user' => $user]);
         return view('page.auth.profile', compact('data'));
     }
 }

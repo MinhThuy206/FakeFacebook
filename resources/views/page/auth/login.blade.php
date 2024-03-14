@@ -24,7 +24,7 @@
                                 <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp" alt="login form" style="object-fit: contain; max-width: 100%; max-height: 100%;" >
                             </div>
                             <div class="col-md-6 col-lg-7 d-flex align-items-center">
-                                <div class="card-body p-4 p-lg-5 text-black" style="background-color: #808080">
+                                <div class="card-body p-4 p-lg-5 text-black" style="background-color: #fcfcfc">
                                     <form id="login">
                                         <div class="d-flex align-items-center mb-3 pb-1">
                                             <i class="fa fa-facebook-square" style="font-size:100px;color: dodgerblue"></i>
