@@ -6,7 +6,7 @@
         .custom-border {
             height: 560px;
             position: relative;
-            background-color: #FFFFFF;
+            /*background-color: #FFFFFF;*/
         }
 
         .cover-border {
@@ -68,7 +68,7 @@
             font-weight: 500;
         }
 
-        .edit-profile-button{
+        .edit-profile-button {
             margin-left: 70%;
             font-size: 16px;
         }
@@ -113,12 +113,15 @@
             object-fit: cover; /* Đảm bảo ảnh bìa nằm trọn trong khung chứa */
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
+            padding: 0
         }
 
         .profile-picture img {
             width: 100%;
             height: 100%;
             object-fit: cover; /* Đảm bảo ảnh đại diện nằm trọn trong khung chứa */
+            position: absolute;
+            right: 0;
         }
 
         /* CSS cho overlay */
@@ -149,10 +152,32 @@
             overflow: auto; /* Cho phép cuộn nếu nội dung quá lớn */
         }
 
-        .type-image{
+        .type-image {
             margin-bottom: -14px;
         }
 
+        .user-option {
+            margin-left: 60%;
+        }
+
+        button.acceptFriendBtn, button.addFriendBtn {
+            font-size: 20px;
+            font-weight: 500;
+            background-color: #0866FF;
+            color: #fff;
+            border-radius: 5px;
+            padding: 4px 20px;
+        }
+
+
+        button.deleteBtn, button.sent-message {
+            font-size: 20px;
+            font-weight: 500;
+            background-color: #cccccc;
+            color: #000;
+            border-radius: 5px;
+            padding: 4px 20px;
+        }
     </style>
 
     <div class="container-fluid" style="margin-top: 56px;">
@@ -163,9 +188,14 @@
                     <img src="{{ asset($data['cover_url']) }}" alt="...">
                 </div>
 
-                <div class="row username-avt d-flex align-items-center justify-content-between" id="username-avt" style="height: 20%;">
+                <div class="row username-avt d-flex align-items-center justify-content-between" id="username-avt"
+                     style="height: 20%;">
                     <div class="profile-picture">
-                        <img src="{{ asset($data['avatar_url']) }}" alt="...">
+                        @if($data['avatar_url'] == null)
+                            <img id="avatar-img" class="avatar-img" src="../image/avatar-trang.jpg" alt="">
+                        @else
+                            <img id="avatar-img" class="avatar-img" src="{{ asset($data['avatar_url']) }}" alt="...">
+                        @endif
                     </div>
                     <div>
                         <div class="username">{{ $data['name'] }}</div>
@@ -174,6 +204,20 @@
                     @if(auth()->user()->id == $data['id'])
                         <div class="edit-profile">
                             <button class="edit-profile-button">Chỉnh sửa trang cá nhân</button>
+                        </div>
+                    @elseif($data['status'] == 'Pending')
+                        <div class="user-option">
+                            <button class="acceptFriendBtn" data-id="{{$data['id']}}">Chấp nhận lời mời</button>
+                            <button class="deleteBtn" data-id="{{$data['id']}}">Xóa lời mời</button>
+                        </div>
+                    @elseif($data['status'] == 'null')
+                        <div class="user-option">
+                            <button class="addFriendBtn" data-id="{{$data['id']}}">Thêm bạn bè</button>
+                            <button class="sent-message" data-id="{{$data['id']}}">Nhắn tin</button>
+                        </div>
+                    @elseif($data['status'] == 'Sent')
+                        <div class="user-option">
+                            <button class="deleteBtn" data-id="{{$data['id']}}">Xóa lời mời</button>
                         </div>
                     @endif
                 </div>
@@ -197,12 +241,56 @@
             </div>
             <div class="col-lg-2"></div>
         </div>
-        <div class="row">
-            <div class="col-lg-12" style="height: 100vh;background-color:#E8E8E8">
-                <div class="col-lg-8" style="background-color: #FFFFFF">
-                    <!-- Content goes here -->
+
+        <div class="row" style="background-color: #f9f9f9; height: 100%">
+            <div class="col-lg-2"></div>
+
+            <div class="col-lg-3 custom-border" style="margin-top:12px; margin-right:12px; height: 50%; background-color: #FFFFFF; border-radius: 5px">
+                <div class="row" style="margin-bottom: 12px;">
+                    <div class="col">
+                        <p>Giới Thiệu</p>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 12px;">
+                    <div class="col">
+                        (Nội dung khối thứ hai)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        (Nội dung khối thứ ba)
+                    </div>
                 </div>
             </div>
+            <div class="col-lg-5 custom-border" style="margin-top:12px; height: 100%">
+                @if(auth()->user()->id == $data['id'])
+                    <div class="header-profile" style="background-color: #ffffff; margin: 0 12px; border-radius: 8px">
+                        <h4>Create New Post</h4>
+                        <div class="container text-center">
+                            <form id="postForm">
+                                @csrf
+                                <label for="content"></label>
+                                <textarea id="content" name="content" class="form-control"
+                                          style="width: 100%; max-width: 80rem;"></textarea>
+                                <br>
+                                <div class="mt-3 d-flex">
+                                    <input type="file" multiple accept="image/*" id="image" onchange="xulyfile()" name="f1">
+                                    <button type="submit" class="btn btn-primary ml-3">Post</button>
+                                </div>
+                                <div id="imagePreview"></div>
+                                <div class="mb-1" id="error"></div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="container" style="margin-top:12px;border-radius: 2px">
+                        <div id="postList"></div>
+                    </div>
+                @endif
+
+
+            </div>
+
+            <div class="col-lg-2"></div>
         </div>
     </div>
 
@@ -219,13 +307,13 @@
                 <div class="modal-body">
                     <p class="type-image">Ảnh đại diện</p>
                     <div class="container text-center">
-                        <form id="postForm">
+                        <form id="postAvatar">
                             @csrf
                             <label for="content"></label>
                             <input id="content" name="content" class="form-control"
                                    style="width: 100%;height: 80px">
                             <div class="mt-3 d-flex">
-                                <input type="file" multiple accept="image/*" id="image" onchange="xulyfile()" name="f1">
+                                <input type="file" multiple accept="image/*" id="image" onchange="xulyfileAvt()" name="f1">
                                 <button type="submit" class="btn btn-primary ml-3">Thêm</button>
                             </div>
                             <div id="imagePreview"></div>
@@ -233,30 +321,46 @@
                         </form>
                     </div>
 
-{{--                    <p class="type-image">Ảnh bìa</p>--}}
-{{--                    <div class="container text-center">--}}
-{{--                        <form id="postForm">--}}
-{{--                            @csrf--}}
-{{--                            <label for="content"></label>--}}
-{{--                            <input id="content" name="content" class="form-control"--}}
-{{--                                      style="max-width: 100%; height: 80px">--}}
-{{--                            <br>--}}
-{{--                            <div class="mt-3 d-flex">--}}
-{{--                                <input type="file" multiple accept="image/*" id="image" onchange="xulyfile()" name="f1">--}}
-{{--                                <button type="submit" class="btn btn-primary ml-3">Thêm</button>--}}
-{{--                            </div>--}}
-{{--                            <div id="imagePreview"></div>--}}
-{{--                            <div class="mb-1" id="error"></div>--}}
-{{--                        </form>--}}
-{{--                    </div>--}}
+                    <p class="type-image">Ảnh bìa</p>
+                    <div class="container text-center">
+                        <form id="postCover">
+                            @csrf
+                            <label for="content"></label>
+                            <input id="content" name="content" class="form-control"
+                                      style="max-width: 100%; height: 80px">
+                            <br>
+                            <div class="mt-3 d-flex">
+                                <input type="file" multiple accept="image/*" id="image" onchange="xulyfileCover()" name="f1">
+                                <button type="submit" class="btn btn-primary ml-3">Thêm</button>
+                            </div>
+                            <div id="imagePreview"></div>
+                            <div class="mb-1" id="error"></div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
 @endsection
 
 @section('js')
     <script src="{{asset('/js/profile.js')}}"></script>
+    <script src="{{asset('/js/post.js')}}"></script>
+
+    <script>
+        $(document).ready(function () {
+            getData({
+                'user_id': {{auth()-> user() -> id}},
+                'orderBy': 'created_at',
+                'order': 'DESC',
+                'page': '0',
+                'pagesize': '5'
+            })
+
+        })
+    </script>
+
 @endsection
 
 
