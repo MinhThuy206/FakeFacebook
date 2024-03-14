@@ -1,10 +1,13 @@
 <?php
 
+use App\Events\MessageSent;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FriendshipsController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PostController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\CheckLogin;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +33,17 @@ Route::get('/post', [PostController::class, 'create'])->name('formpost')->middle
 
 Route::get('/friends', [FriendshipsController::class, 'create'])->name('formfriend')->middleware(CheckLogin::class);
 
-Route::get('/', [AuthController::class, 'logout'])->name('logout')->middleware(CheckLogin::class);
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware(CheckLogin::class);
 
 Route::get("/profile/{username}", [AuthController::class,'viewProfile'])->name('profile')->middleware(CheckLogin::class);
+
+Route::get('message/{username}',[MessageController::class,'form_messenger']);
+
+Route::get('/', function () {
+    return view('chat');
+});
+
+Route::post('message',function (Request $request){
+    broadcast(new MessageSent(auth()->user(), $request->input('message')));
+    return $request->input('message');
+});

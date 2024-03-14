@@ -3,9 +3,11 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FriendshipsController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PostController;
 use App\Http\Middleware\CheckLogin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +30,7 @@ Route::get('/profile', [AuthController::class, 'profile'])->name('profile')->mid
 Route::group(['prefix' => 'post', 'middleware' => CheckLogin::class], function ($route) {
     Route::post('/', [PostController::class, 'store']);
     Route::get('/', [PostController::class, 'filter']);
+    Route::get('/user',[PostController::class,'filterPost']);
     Route::put('/{post}', [PostController::class, 'update']);
     Route::get('/{post}', [PostController::class, 'show']);
     Route::delete('/{post}', [PostController::class, 'destroy']);
@@ -52,4 +55,18 @@ Route::group(['prefix' => '/friend', 'middleware' => CheckLogin::class], functio
     Route::get('/friend', [FriendshipsController::class, 'filterFriend']);
     Route::delete('/deleteFriend/{user}', [FriendshipsController::class, 'deleteFriend']);
     Route::delete('/delete/{user}', [FriendshipsController::class, 'deleteRequestAddFriend']);
+});
+
+Route::group(['prefix' => '/message', 'middleware' => CheckLogin::class], function ($route) {
+    Route::post('/sent',[MessageController::class,'store']);
+    Route::get('/filterMessage/{user_id2}',[MessageController::class,'filterMessage']);
+    Route::get('/filterUserMessage',[MessageController::class,'filterUserMessage']);
+});
+
+Route::post('/broadcast',function (Request $request) {
+    $pusher = Broadcast::driver('pusher')->getPusher();
+    return $pusher->authorizeChannel(
+        "chat.".auth()->id(),
+        $request->request->get('socket_id')
+    );
 });
