@@ -2,9 +2,6 @@
 @section('title')
     Friend
 @endsection
-
-
-
 @section('content')
     <style>
         .option1 p,

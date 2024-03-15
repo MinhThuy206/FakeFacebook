@@ -1,6 +1,7 @@
 @extends('layout.layout')
 @section('title', 'Profile')
 @section('content')
+
 <style>
     .card-message {
         clear: both;
@@ -204,15 +205,15 @@
         font-weight: 500;
     }
 
-
 </style>
+
 <div class="container-fluid" style="margin-top: 56px; display: flex; flex-direction: column; height: auto">
     <div class="row" style="flex: 1;">
         <div class="col-md-3">
             <div class="card-header">
                 <div class="title">Đoạn chat</div>
                 <form class="d-flex me-auto">
-                    <input class="form-control me-2" type="search" placeholder="Tìm kiếm trên Messenger" aria-label="Search" style="border-radius: 27pxb">
+                    <input class="form-control me-2" type="search" placeholder="Tìm kiếm trên Messenger" aria-label="Search" style="border-radius: 27px">
                 </form>
                 <div class="title-select">
                     <div class="mess">Hộp Thư</div>
@@ -266,6 +267,8 @@
     <script>
         const userId = {{auth()->user()->id}};
         const userTo = {{$toUser}};
+        var userName = "{{$user->username}}";
+        var name = "{{$user->name}}"
     </script>
     <script src="{{asset('/js/message.js')}}"></script>
     <script>

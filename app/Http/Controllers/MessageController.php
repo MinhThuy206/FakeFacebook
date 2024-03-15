@@ -7,7 +7,6 @@ use App\Http\Requests\Message\MessageRequest;
 use App\Http\Requests\Message\StoreMessageRequest;
 use App\Models\Message;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
 {

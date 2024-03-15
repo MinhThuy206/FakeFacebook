@@ -51,14 +51,14 @@ function renderUser(user) {
     let html = ''
     if (user.avatar_url == null) {
         html += `
-            <div class="user">
+            <div class="user" data-id="${user.id}" data-username="${user.username}" data-name="${user.name}">
                 <div class="avatar"><img src="../image/avatar-trang.jpg" alt="User Avatar"></div>
                 <div class="username">${user.name}</div>
             </div>
     `
     } else {
         html += `
-            <div class="user">
+            <div class="user" data-id="${{userTo}}" data-name="${{userName}}">
                 <div class="avatar"><img src="../${user.avatar_url}" alt="User Avatar"></div>
                 <div class="username">${user.name}</div>
             </div>
@@ -85,9 +85,7 @@ function getData(data) {
             $.ajax({
                 method: "GET",
                 url: "/api/message/filterMessage/" + userTo,
-                data: data,
                 headers: {'Accept': 'application/json'},
-
                 success: function (data) {
                     var message = data.data;
                     var htmlContent = '';
@@ -95,12 +93,16 @@ function getData(data) {
                         htmlContent += renderData(item)
                     }, this)
 
-                    $('#message').html(htmlContent);
+                    $('#message').html(htmlContent); // Hiển thị tin nhắn của người dùng
+
+                    // Thay đổi đường dẫn URL theo user_id
+                    history.pushState(null, '', '/message/' + userName);
                 },
                 error: function (data, textStatus, jqXHR) {
                     console.log(data)
                 }
             })
+            attachUserClickEvent();
         }
     })
 }
@@ -127,6 +129,35 @@ $('form#messageForm').on('submit', function (event) {
     })
 })
 
+function attachUserClickEvent(){
+    $(document).on('click', '.user', function() {
+        let userId = $(this).data('id');
+        let userName = $(this).data('username');
+        let name = $(this).data('name');
+        // Gửi yêu cầu AJAX để lấy tin nhắn của người dùng đó
+        $.ajax({
+            method: "GET",
+            url: "/api/message/filterMessage/" + userId,
+            headers: {'Accept': 'application/json'},
+            success: function (data) {
+                var message = data.data;
+                var htmlContent = '';
+                message.forEach(function (item) {
+                    htmlContent += renderData(item)
+                }, this)
+
+                $('#message').html(htmlContent); // Hiển thị tin nhắn của người dùng
+
+                // Thay đổi đường dẫn URL theo user_id
+                history.pushState(null, '', '/message/' + userName);
+                $('.username').text(name);
+            },
+            error: function (data, textStatus, jqXHR) {
+                console.log(data)
+            }
+        })
+    });
+}
 
 
 
