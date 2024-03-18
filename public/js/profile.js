@@ -18,10 +18,10 @@ document.addEventListener('DOMContentLoaded', function () {
     var closeModalButton = document.querySelector('.close');
     var overlay = document.getElementById('overlay');
 
-    editProfileButton.addEventListener('click', function () {
-        editModal.style.display = 'block';
-        overlay.style.display = 'block';
-    });
+    // editProfileButton.addEventListener('click', function () {
+    //     editModal.style.display = 'block';
+    //     overlay.style.display = 'block';
+    // });
 
     closeModalButton.addEventListener('click', function () {
         editModal.style.display = 'none';
@@ -135,8 +135,8 @@ $(document).ready(function () {
                                     url: '/api/image/avatar/' + image,
                                     headers: {'Accept': 'application/json'},
                                     success: function (data, textStatus, jqXHR) {
-                                        // $("img#avatar-img").attr('src', this.url)
-                                        console.log(data)
+                                        console.log("Update cover success")
+                                        location.reload();
                                     },
                                     error: function (data, textStatus, jqXHR) {
                                         console.log("Update avatar fail")
@@ -285,6 +285,11 @@ $(document).ready(function () {
             }
         })
     })
+
+    $('.sent-message').click(function () {
+        var username = $(this).data('username');
+        window.location.href = '/message/' + username;
+    });
 })
 
 function loadFriendButton() {
@@ -380,6 +385,7 @@ function loadFriendButton() {
             }
         })
     })
+
 }
 
 function getData(data) {

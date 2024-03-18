@@ -26,6 +26,7 @@ ws.addEventListener('message', event => {
     }
     if (data.message) {
         $('#message').append(renderData(data))
+        onDataReceived(data);
     }
 })
 
@@ -51,16 +52,16 @@ function renderUser(user) {
     let html = ''
     if (user.avatar_url == null) {
         html += `
-            <div class="user" data-id="${user.id}" data-username="${user.username}" data-name="${user.name}">
+            <div class="user" data-id="${user.id}" data-username="${user.username}" data-name="${user.name}" data-avatar="${user.avatar_url}">
                 <div class="avatar"><img src="../image/avatar-trang.jpg" alt="User Avatar"></div>
-                <div class="username">${user.name}</div>
+                <div class="name">${user.name}</div>
             </div>
     `
     } else {
         html += `
-            <div class="user" data-id="${{userTo}}" data-name="${{userName}}">
+            <div class="user" data-id="${user.id}" data-username="${user.username}" data-name="${user.name}" data-avatar="${user.avatar_url}">
                 <div class="avatar"><img src="../${user.avatar_url}" alt="User Avatar"></div>
-                <div class="username">${user.name}</div>
+                <div class="name">${user.name}</div>
             </div>
     `
     }
@@ -97,6 +98,7 @@ function getData(data) {
 
                     // Thay đổi đường dẫn URL theo user_id
                     history.pushState(null, '', '/message/' + userName);
+                    scrollToBottom();
                 },
                 error: function (data, textStatus, jqXHR) {
                     console.log(data)
@@ -121,6 +123,7 @@ $('form#messageForm').on('submit', function (event) {
         success: function (data, textStatus, jqXHR) {
             getData(data)
             $('form#messageForm').trigger("reset");
+            scrollToBottom();
             console.log("Upload message success")
         },
         error: function (data, textStatus, jqXHR) {
@@ -129,12 +132,23 @@ $('form#messageForm').on('submit', function (event) {
     })
 })
 
-function attachUserClickEvent(){
-    $(document).on('click', '.user', function() {
+function attachUserClickEvent() {
+    $(document).on('click', '.user', function () {
         let userId = $(this).data('id');
         let userName = $(this).data('username');
         let name = $(this).data('name');
-        // Gửi yêu cầu AJAX để lấy tin nhắn của người dùng đó
+        let avatarUrl = $(this).data('avatar');
+        let avt = '';
+        if (avatarUrl == null) {
+            avt = "../image/avatar-trang.jpg"
+        } else {
+            avt = "../" + avatarUrl;
+        }
+        userTo = $(this).data('id');
+
+        $('.userchatname').text(name);
+        $('#avatar-img').attr('src', avt)
+
         $.ajax({
             method: "GET",
             url: "/api/message/filterMessage/" + userId,
@@ -146,11 +160,12 @@ function attachUserClickEvent(){
                     htmlContent += renderData(item)
                 }, this)
 
-                $('#message').html(htmlContent); // Hiển thị tin nhắn của người dùng
-
                 // Thay đổi đường dẫn URL theo user_id
                 history.pushState(null, '', '/message/' + userName);
-                $('.username').text(name);
+                $('#message').html(htmlContent); // Hiển thị tin nhắn của người dùng
+                scrollToBottom()
+
+
             },
             error: function (data, textStatus, jqXHR) {
                 console.log(data)
@@ -158,6 +173,47 @@ function attachUserClickEvent(){
         })
     });
 }
+
+// Hàm này sẽ nhóm tin nhắn theo ngày
+function groupMessagesByDate(messages) {
+    var groupedMessages = {};
+    messages.forEach(function (message) {
+        var date = new Date(message.created_at).toLocaleDateString();
+        if (!groupedMessages[date]) {
+            groupedMessages[date] = [];
+        }
+        groupedMessages[date].push(message);
+    });
+    return groupedMessages;
+}
+
+// Hàm này sẽ hiển thị tin nhắn và ngày tương ứng
+function displayMessages(groupedMessages) {
+    var messageBody = document.getElementById("messageBody");
+    messageBody.innerHTML = ''; // Xóa tin nhắn hiện tại trước khi hiển thị tin nhắn mới
+    Object.keys(groupedMessages).forEach(function (date) {
+        var messages = groupedMessages[date];
+        var messageDateElement = document.createElement('div');
+        messageDateElement.textContent = date;
+        messageDateElement.classList.add('message-date');
+        messageBody.appendChild(messageDateElement);
+        messages.forEach(function (message) {
+            var messageElement = document.createElement('div');
+            messageElement.textContent = message.content;
+            messageElement.classList.add('message-text');
+            messageBody.appendChild(messageElement);
+        });
+    });
+}
+
+// Hàm này sẽ được gọi khi nhận được dữ liệu tin nhắn mới từ máy chủ
+function onDataReceived(data) {
+    var groupedMessages = groupMessagesByDate(data.messages);
+    displayMessages(groupedMessages);
+    scrollToBottom(); // Cuộn xuống dưới sau khi hiển thị tin nhắn mới
+}
+
+
 
 
 

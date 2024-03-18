@@ -16,8 +16,9 @@ class MessageController extends Controller
     public function form_messenger($username)
     {
         $user = User::where('username', $username)->first();
+        $data = $user->toArray();
         $toUser=$user->id;
-        return view('page.auth.messenger', compact(['user', 'toUser']));
+        return view('page.auth.messenger', compact(['user', 'toUser', 'data']));
     }
 
     /**

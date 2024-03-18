@@ -213,7 +213,7 @@
                     @elseif($data['status'] == 'null')
                         <div class="user-option">
                             <button class="addFriendBtn" data-id="{{$data['id']}}">Thêm bạn bè</button>
-                            <button class="sent-message" data-id="{{$data['id']}}">Nhắn tin</button>
+                            <button class="sent-message" data-username="{{$data['username']}}">Nhắn tin</button>
                         </div>
                     @elseif($data['status'] == 'Sent')
                         <div class="user-option">
