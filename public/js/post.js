@@ -1,27 +1,38 @@
 var image_arr;
 
 function renderData(post) {
-    html = `<div class="card mb-6" id="${post.id}" style="max-width: 100rem; margin: auto">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4>${post.user}</h4>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
 
-                        </button>
+    let html = '';
+    html = `<div class="card post" id="${post.id}" style="max-width: 100rem">
+                <div class="card-header d-flex justify-content-between align-items-center card-content">
+                     <div class="post-avatar">`
+
+    if (post.avatar_url == null) {
+        html += `<img id="avatar-img" class="avatar-img" src="../image/avatar-trang.jpg" alt="">`
+
+    } else {
+        html += `<img id="avatar-img" class="avatar-img" src="../${post.avatar_url}" alt="...">`
+    }
+    html += `</div>
+             <div class="post-header-info">
+                    <div class="user-name">${post.user}</div>
+             </div>
+             <div class="btn-group">
+                        <button type="button" class="btn btn-secondary dropdown-toggle button-select-option" data-bs-toggle="dropdown" aria-expanded="false"></button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><button class="dropdown-item delete-post" type="button" data-id="${post.id}">Delete</button></li>
                             <li><button class="dropdown-item edit-post" type="button" data-id="${post.id}">Edit</button></li>
                         </ul>
-                    </div>
-                </div>
+             </div>
+             </div>
 
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <p class="card-text">${post.content}</p>
-                </div>
 
-                <div class="card-body d-flex flex-wrap justify-content-center">`; // Sử dụng flexbox để tự động sắp xếp các ảnh
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <p class="card-text">${post.content}</p>
+            </div>
 
-    // Kiểm tra nếu chỉ có một ảnh thì đặt kích thước cho nó bằng với kích thước của ô chứa
+            <div class="card-body d-flex flex-wrap justify-content-center">`;
+
     if (post.images.length === 1) {
         var url = "../" + post.images[0].url;
         html += `<div class="image-container" style="width: 100%; height: 800px; margin: 5px;"> <!-- Thiết lập kích thước và margin -->
@@ -36,11 +47,10 @@ function renderData(post) {
         }, this);
     }
     html += `</div>
-        </div>`;
+        </div>`
 
     return html;
 }
-
 
 
 function xulyfile() {
@@ -87,6 +97,7 @@ function getData(data) {
 
         success: function (data, textStatus, jqXHR) {
             var post = data.data;
+            console.log(post)
             var htmlContent = '';
             post.forEach(function (item) {
                 htmlContent += renderData(item);

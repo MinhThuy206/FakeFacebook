@@ -249,7 +249,6 @@
                     <div>
                         <div class="userchatname">{{ $user['name'] }}</div>
                     </div>
-
                 </div>
                 <div class="message-container">
                     <div class="message-content" id="messageBody">

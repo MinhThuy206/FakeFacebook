@@ -178,6 +178,84 @@
             border-radius: 5px;
             padding: 4px 20px;
         }
+
+
+        .card.mb-6.post {
+            margin-top: 10px;
+        }
+
+        .card-content{
+            background-color: #fff;
+            border-bottom: #fff ;
+        }
+
+        .button-select-option{
+            background-color: #fff;
+            padding: 0px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: #fff;
+        }
+
+        .button-select-option:hover{
+            background-color: #f9f9f9;
+        }
+
+        .button-select-option::after{
+            color: #000;
+        }
+
+        .post {
+            border: 1px solid #ddd; /* Add border for post */
+            border-radius: 8px; /* Rounded corners */
+            margin-bottom: 20px; /* Add space between posts */
+        }
+
+        .post-header {
+            display: flex; /* Use flexbox for header */
+            padding: 12px;
+            border-bottom: 1px solid #ddd; /* Add border bottom for header */
+        }
+
+        .post-avatar {
+            margin-right: 12px;
+        }
+
+        .avatar-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%; /* Make avatar round */
+        }
+
+        .post-header-info{
+
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .post-timestamp {
+            color: #666;
+        }
+
+        .button-select-option {
+            margin-left: auto; /* Đẩy nút option sang phải cùng của container cha */
+        }
+
+        .post-header-info{
+            padding-right: 23rem;
+        }
+
+        .card-text{
+            padding: 10px;
+        }
+
+
+        .card-body{
+            padding: 0px
+        }
     </style>
 
     <div class="container-fluid" style="margin-top: 56px;">
