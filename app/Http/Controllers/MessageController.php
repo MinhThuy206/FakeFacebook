@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Events\MessageSent;
 use App\Http\Requests\Message\MessageRequest;
 use App\Http\Requests\Message\StoreMessageRequest;
+use App\Models\Conservation;
 use App\Models\Message;
 use App\Models\User;
+use App\Models\UserInConservation;
 
 class MessageController extends Controller
 {
@@ -17,7 +19,28 @@ class MessageController extends Controller
     {
         $user = User::where('username', $username)->first();
         $data = $user->toArray();
-        $toUser=$user->id;
+        $toUser = $user->id;
+        $cons = Conservation::query()->whereHas('users',function ($q){
+            $q->where('users.id','=',auth()->id());
+        })->whereHas('users',function ($q) use ($toUser){
+            $q->where('users.id','=',$toUser);
+        })->where('two',true)->first();
+        if (!$cons){
+            $cons = Conservation::create([
+                'name' => "",
+                'two' =>true
+            ]);
+            UserInConservation::query()->insert([
+                'cons_id' => $cons->id,
+                'user_id' => $toUser,
+                'admin' => true
+            ]);
+            UserInConservation::query()->insert([
+                'cons_id' => $cons->id,
+                'user_id' => auth()->id(),
+                'admin' => true
+            ]);
+        }
         return view('page.auth.messenger', compact(['user', 'toUser', 'data']));
     }
 
@@ -30,7 +53,7 @@ class MessageController extends Controller
             'userTo' => $request->userTo,
             'message' => $request->get('message'),
         ]);
-        broadcast(new MessageSent($request->get('message'),$request->userTo));
+        broadcast(new MessageSent($request->get('message'), $request->userTo));
         if (!$message) {
             return response()->json(['message' => 'not exist'], 422);
         }
@@ -75,10 +98,10 @@ class MessageController extends Controller
             "data" => array(),
         ];
 
-        foreach($messages -> get() as $message){
-            $response['data'][] = $message -> toArray();
+        foreach ($messages->get() as $message) {
+            $response['data'][] = $message->toArray();
         }
-        return response() -> json($response);
+        return response()->json($response);
     }
 
     public function filterUserMessage()

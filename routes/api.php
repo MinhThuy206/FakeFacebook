@@ -1,11 +1,15 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ConservationController;
 use App\Http\Controllers\FriendshipsController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\MessageInConservationController;
 use App\Http\Controllers\PostController;
 use App\Http\Middleware\CheckLogin;
+use App\Models\Conservation;
+use App\Models\MessageInConservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
@@ -61,6 +65,9 @@ Route::group(['prefix' => '/message', 'middleware' => CheckLogin::class], functi
     Route::post('/sent',[MessageController::class,'store']);
     Route::get('/filterMessage/{user_id2}',[MessageController::class,'filterMessage']);
     Route::get('/filterUserMessage',[MessageController::class,'filterUserMessage']);
+    Route::post('/storeGroup',[ConservationController::class,'store']);
+    Route::post('/sentMessGroup',[MessageInConservationController::class,'store']);
+    Route::get('/getMessage/{cons_id}',[MessageInConservationController::class,'getMessageInConservation']);
 });
 
 Route::post('/broadcast',function (Request $request) {

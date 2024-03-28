@@ -40,7 +40,7 @@ Route::get("/profile/{username}", [AuthController::class,'viewProfile'])->name('
 Route::get('message/{username}',[MessageController::class,'form_messenger']);
 
 Route::get('/', function () {
-    return view('chat');
+//    return view('chat');
 });
 
 Route::post('message',function (Request $request){

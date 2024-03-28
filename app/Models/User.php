@@ -102,8 +102,8 @@ class User extends Authenticatable implements JWTSubject
 //            'phone' => $this->phone,
 //            'email' => $this->email,
             'friends' => $this->friends()->count(),
-            'avatar_id' => $this->avatar_id,
-            'cover_id' => $this->cover_id,
+//            'avatar_id' => $this->avatar_id,
+//            'cover_id' => $this->cover_id,
         ];
 
         if ($this->avatar_id) {

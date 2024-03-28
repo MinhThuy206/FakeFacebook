@@ -119,6 +119,7 @@
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 10px;
+            margin-right: 9rem;
         }
 
         .form-control {
@@ -213,13 +214,53 @@
             border-radius: 5px;
         }
 
+        .hidden {
+            display: none;
+        }
+
+        /* CSS cho overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.2); /* Màu nền mờ */
+            z-index: 999; /* Đảm bảo nằm trên mọi phần tử khác */
+            display: none; /* Mặc định ẩn overlay */
+        }
+
+        /* CSS cho modal */
+        .modal {
+            position: fixed;
+            top: 50%; /* Đặt phần tử ở giữa theo chiều dọc */
+            left: 50%; /* Đặt phần tử ở giữa theo chiều ngang */
+            transform: translate(-50%, -50%); /* Dịch chuyển modal để nó được căn giữa trang */
+            background-color: white;
+            z-index: 1000; /* Đảm bảo nằm trên overlay */
+            padding: 20px;
+            border-radius: 5px;
+            display: none; /* Mặc định ẩn modal */
+            max-width: 50%; /* Đặt chiều rộng tối đa của modal */
+            max-height: 80%; /* Đặt chiều cao tối đa của modal */
+            overflow: auto; /* Cho phép cuộn nếu nội dung quá lớn */
+        }
+
+
     </style>
 
     <div class="container-fluid" style="margin-top: 56px; display: flex; flex-direction: column; height: auto">
         <div class="row" style="flex: 1;">
             <div class="col-md-3">
                 <div class="card-header">
-                    <div class="title">Đoạn chat</div>
+                    <div style="display: flex; align-items: center;">
+                        <div class="title">Đoạn chat</div>
+                        <div id="chatMessage" class="hidden">Tạo nhóm</div>
+                        <div style="cursor: pointer; margin-right: 5px;" id="addIcon" class="conservations">
+                            <i class="material-icons"  style="margin-right: 3px;">add</i> <!-- Thay "add" bằng class icon của bạn -->
+                        </div>
+
+                    </div>
                     <form class="d-flex me-auto">
                         <input class="form-control me-2" type="search" placeholder="Tìm kiếm trên Messenger"
                                aria-label="Search" style="border-radius: 27px">
@@ -270,6 +311,25 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="overlay" id="overlay"></div>
+    <div class="modal" id="editModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Chỉnh sửa trang cá nhân</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    hello
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 @endsection
 
 @section('js')
@@ -302,5 +362,44 @@
         window.onload = function () {
             scrollToBottom(); // Cuộn xuống dưới khi trang được tải
         };
+    </script>4
+
+    <script>
+        const addIcon = document.getElementById('addIcon');
+        const chatMessage = document.getElementById('chatMessage');
+
+        // Bắt sự kiện hover vào biểu tượng "+"
+        addIcon.addEventListener('mouseenter', function() {
+            chatMessage.classList.remove('hidden'); // Hiển thị đoạn message
+        });
+
+        // Bắt sự kiện hover ra khỏi biểu tượng "+"
+        addIcon.addEventListener('mouseleave', function() {
+            chatMessage.classList.add('hidden'); // Ẩn đoạn message
+        });
+    </script>
+
+    <script>
+        // Lấy phần tử cần thiết
+        var modal = document.getElementById("myModal");
+        var addIcon = document.getElementById("addIcon");
+        var closeButton = document.getElementsByClassName("close")[0];
+
+        // Khi người dùng nhấp vào biểu tượng "+", hiển thị modal
+        addIcon.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        // Khi người dùng nhấp vào nút đóng trong modal, ẩn modal
+        closeButton.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // Khi người dùng nhấp vào bất kỳ đâu bên ngoài modal, ẩn modal
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
     </script>
 @endsection

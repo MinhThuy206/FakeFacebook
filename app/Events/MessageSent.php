@@ -12,7 +12,10 @@ class MessageSent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $conservationId;
+
     public $userFrom;
+    public $userTo;
 
     public $message;
 
@@ -21,10 +24,12 @@ class MessageSent implements ShouldBroadcastNow
      *
      * @return void
      */
-    public function __construct($message, $userFrom)
+    public function __construct($message, $userTo, $userFrom, $conservationId)
     {
         $this->message = $message;
+        $this->userTo = $userTo;
         $this->userFrom = $userFrom;
+        $this->conservationId = $conservationId;
     }
 
     /**
@@ -34,13 +39,18 @@ class MessageSent implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new Channel('chat.'.$this->userFrom);
+        return new Channel('chat.' . $this->userTo);
     }
 
     public function broadcastWith(): array
     {
+        $user = $this->userFrom->toArray();
         return [
-            'userFrom' => auth()->id(),
+            'conservationId' => $this->conservationId,
+            'userFrom' => [
+                'name' => $user['name'],
+                'avatar_url' => $user['avatar_url']
+            ],
             'message' => $this->message
         ];
     }
