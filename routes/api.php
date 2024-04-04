@@ -62,12 +62,13 @@ Route::group(['prefix' => '/friend', 'middleware' => CheckLogin::class], functio
 });
 
 Route::group(['prefix' => '/message', 'middleware' => CheckLogin::class], function ($route) {
-    Route::post('/sent',[MessageController::class,'store']);
+    Route::get('/filterConservations',[ConservationController::class,'filterConservations']);
+    Route::post('/sent',[MessageInConservationController::class,'store']);
+    Route::get('/getMessage/{cons_id}',[MessageInConservationController::class,'getMessageInConservation']);
     Route::get('/filterMessage/{user_id2}',[MessageController::class,'filterMessage']);
-    Route::get('/filterUserMessage',[MessageController::class,'filterUserMessage']);
+
     Route::post('/storeGroup',[ConservationController::class,'store']);
     Route::post('/sentMessGroup',[MessageInConservationController::class,'store']);
-    Route::get('/getMessage/{cons_id}',[MessageInConservationController::class,'getMessageInConservation']);
 });
 
 Route::post('/broadcast',function (Request $request) {

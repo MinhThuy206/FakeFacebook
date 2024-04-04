@@ -3,29 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Message\StoreConservationRequest;
-use App\Http\Requests\Message\UpdateConservationRequest;
 use App\Models\Conservation;
 use App\Models\User;
 use App\Models\UserInConservation;
 
 class ConservationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -45,34 +28,25 @@ class ConservationController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Filter Conservations.
      */
-    public function show(Conservation $conservation)
+    public function filterConservations()
     {
-        //
+        $conversations = Conservation::query()->whereHas('users', function ($q) {
+            $q->where('users.id', '=', auth()->id());
+        })->get();
+        $response = [
+            "data" => array(),
+//            "current_page" => $conversations->currentPage(),
+//            "last_page" => $conversations->lastPage(),
+//            "per_page" => $conversations->perPage(),
+//            "total" => $conversations->total()
+        ];
+
+        foreach($conversations as $conversation){
+            $response['data'][] = $conversation -> toArray();
+        }
+        return response()->json($response);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Conservation $conservation)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateConservationRequest $request, Conservation $conservation)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Conservation $conservation)
-    {
-        //
-    }
 }

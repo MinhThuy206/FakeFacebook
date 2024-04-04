@@ -4,6 +4,7 @@ use App\Events\MessageSent;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FriendshipsController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\MessageInConservationController;
 use App\Http\Controllers\PostController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\CheckLogin;
@@ -37,13 +38,13 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middle
 
 Route::get("/profile/{username}", [AuthController::class,'viewProfile'])->name('profile')->middleware(CheckLogin::class);
 
-Route::get('message/{username}',[MessageController::class,'form_messenger']);
+Route::get('message/{identify}',[MessageInConservationController::class,'form_messenger']);
 
-Route::get('/', function () {
-//    return view('chat');
-});
+//Route::get('/', function () {
+////    return view('chat');
+//});
 
-Route::post('message',function (Request $request){
-    broadcast(new MessageSent(auth()->user(), $request->input('message')));
-    return $request->input('message');
-});
+//Route::post('message',function (Request $request){
+//    broadcast(new MessageSent(auth()->user(), $request->input('message')));
+//    return $request->input('message');
+//});

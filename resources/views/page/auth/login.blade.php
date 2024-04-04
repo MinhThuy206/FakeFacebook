@@ -1,16 +1,15 @@
-
-@extends('page.auth.layout')
+@extends('layout.layout_no_menu')
 @section('title')
     Login
 @endsection
 <style>
-  .divider:after,
-  .divider:before {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: #eee;
-  }
+    .divider:after,
+    .divider:before {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #eee;
+    }
 </style>
 
 @section('content')
@@ -21,26 +20,32 @@
                     <div class="card" style="border-radius: 1rem;">
                         <div class="row g-0">
                             <div class="col-md-6 col-lg-5 d-none d-md-block ">
-                                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp" alt="login form" style="object-fit: contain; max-width: 100%; max-height: 100%;" >
+                                <img
+                                    src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp"
+                                    alt="login form" style="object-fit: contain; max-width: 100%; max-height: 100%;">
                             </div>
                             <div class="col-md-6 col-lg-7 d-flex align-items-center">
                                 <div class="card-body p-4 p-lg-5 text-black" style="background-color: #fcfcfc">
                                     <form id="login">
                                         <div class="d-flex align-items-center mb-3 pb-1">
-                                            <i class="fa fa-facebook-square" style="font-size:100px;color: dodgerblue"></i>
+                                            <i class="fa fa-facebook-square"
+                                               style="font-size:100px;color: dodgerblue"></i>
                                         </div>
 
-                                        <h2 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Sign into your account</h2>
+                                        <h2 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Sign into your
+                                            account</h2>
 
                                         <div class="form-outline mb-4">
                                             <label class="form-label" for="form2Example17">Email address</label>
-                                            <input type="email" id="email" class="form-control form-control-lg" name="email">
+                                            <input type="email" id="email" class="form-control form-control-lg"
+                                                   name="email">
                                             <div class="mb-1" id="email-error"></div>
                                         </div>
 
                                         <div class="form-outline mb-4">
                                             <label class="form-label" for="form2Example27">Password</label>
-                                            <input type="password" id="password" class="form-control form-control-lg" name="password">
+                                            <input type="password" id="password" class="form-control form-control-lg"
+                                                   name="password">
                                             <div class="mb-1" id="password-error"></div>
                                         </div>
 
@@ -49,7 +54,9 @@
                                         </div>
 
                                         <a class="small text-muted" href="#!">Forgot password?</a>
-                                        <p class="mb-5 pb-lg-2" style="color: #393f81;">Don't have an account? <a href="{{route('formregister')}}" style="color: #393f81;">Register here</a></p>
+                                        <p class="mb-5 pb-lg-2" style="color: #393f81;">Don't have an account? <a
+                                                href="{{route('formregister')}}" style="color: #393f81;">Register
+                                                here</a></p>
                                         <div class="mb-1" id="error"></div>
                                     </form>
 

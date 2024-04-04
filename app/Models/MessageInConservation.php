@@ -35,6 +35,21 @@ class MessageInConservation extends Model
 //        return $this->belongsToMany(User::class, 'message_in_conservations', 'userFrom');
 //    }
 
+    public function toArray()
+    {
+        $user = User::query()->where('id','=',$this->userFrom)->firstOrFail()->toArray();
+       return [
+           'conservationId' => $this->cons_id,
+           'created_at' =>$this->created_at,
+           'userFrom' => [
+               'id' => $user['id'],
+               'name' => $user['name'],
+               'avatar_url' => $user['avatar_url']
+           ],
+           'message' => $this->message
+       ];
+    }
+
     public static function boot()
     {
         parent::boot();

@@ -54,7 +54,7 @@
             border-radius: 50%;
         }
 
-        .userchatname {
+        .chatname {
             font-weight: 500;
             font-size: 24px;
         }
@@ -257,7 +257,8 @@
                         <div class="title">Đoạn chat</div>
                         <div id="chatMessage" class="hidden">Tạo nhóm</div>
                         <div style="cursor: pointer; margin-right: 5px;" id="addIcon" class="conservations">
-                            <i class="material-icons"  style="margin-right: 3px;">add</i> <!-- Thay "add" bằng class icon của bạn -->
+                            <i class="material-icons" style="margin-right: 3px;">add</i>
+                            <!-- Thay "add" bằng class icon của bạn -->
                         </div>
 
                     </div>
@@ -276,38 +277,35 @@
                     </div>
                 </div>
             </div>
-
-
-            <div class="col-md-9 body">
-                <div class="message-header">
-                    <div class="profile-picture">
-                        @if($user['avatar_id'] == null)
-                            <img id="avatar-img" class="avatar-img" src="../image/avatar-trang.jpg" alt="">
-                        @else
-                            <img id="avatar-img" class="avatar-img" src="../{{$data['avatar_url']}}" alt="...">
-                        @endif
+            @if($cons != null)
+                @php($cons = $cons->toArray())
+                <div class="col-md-9 body" >
+                    <div class="message-header">
+                        <div class="profile-picture">
+                            <img id="avatar-img" class="avatar-img" src="../{{$cons['avatar_url']}}" alt="...">
+                        </div>
+                        <div>
+                            <div class="chatname">{{ $cons['name'] }}</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="userchatname">{{ $user['name'] }}</div>
-                    </div>
-                </div>
-                <div class="message-container">
-                    <div class="message-content" id="messageBody">
-                        <div class="messages" id="message"></div>
-                    </div>
-                    <div class="message-input">
-                        <form id="messageForm">
-                            @csrf
-                            <div class="form-group">
-                                <input class="form-control" placeholder="Nhập tin nhắn..." id="messageInput"
-                                       name="message">
-                                <button class="send-button" style="padding: 4px 13px" type="submit"><i
-                                        class="material-icons">send</i></button>
-                            </div>
-                        </form>
+                    <div class="message-container">
+                        <div class="message-content" id="messageBody">
+                            <div class="messages" id="message" data-id="{{$cons['id']}}"></div>
+                        </div>
+                        <div class="message-input">
+                            <form id="messageForm">
+                                @csrf
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Nhập tin nhắn..." id="messageInput"
+                                           name="message">
+                                    <button class="send-button" style="padding: 4px 13px" type="submit"><i
+                                            class="material-icons">send</i></button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 
@@ -329,15 +327,12 @@
         </div>
     </div>
 
-
 @endsection
 
 @section('js')
     <script>
         const userId = {{auth()->user()->id}};
-        let userTo = {{$toUser}};
-        var userName = "{{$user->username}}";
-        var name = "{{$user->name}}"
+        let consId = {{$cons['id']}};
     </script>
 
 
@@ -362,19 +357,19 @@
         window.onload = function () {
             scrollToBottom(); // Cuộn xuống dưới khi trang được tải
         };
-    </script>4
+    </script>
 
     <script>
         const addIcon = document.getElementById('addIcon');
         const chatMessage = document.getElementById('chatMessage');
 
         // Bắt sự kiện hover vào biểu tượng "+"
-        addIcon.addEventListener('mouseenter', function() {
+        addIcon.addEventListener('mouseenter', function () {
             chatMessage.classList.remove('hidden'); // Hiển thị đoạn message
         });
 
         // Bắt sự kiện hover ra khỏi biểu tượng "+"
-        addIcon.addEventListener('mouseleave', function() {
+        addIcon.addEventListener('mouseleave', function () {
             chatMessage.classList.add('hidden'); // Ẩn đoạn message
         });
     </script>
@@ -386,17 +381,17 @@
         var closeButton = document.getElementsByClassName("close")[0];
 
         // Khi người dùng nhấp vào biểu tượng "+", hiển thị modal
-        addIcon.onclick = function() {
+        addIcon.onclick = function () {
             modal.style.display = "block";
         }
 
         // Khi người dùng nhấp vào nút đóng trong modal, ẩn modal
-        closeButton.onclick = function() {
+        closeButton.onclick = function () {
             modal.style.display = "none";
         }
 
         // Khi người dùng nhấp vào bất kỳ đâu bên ngoài modal, ẩn modal
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (event.target == modal) {
                 modal.style.display = "none";
             }

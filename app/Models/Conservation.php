@@ -35,14 +35,45 @@ class Conservation extends Model
     /**
      * Relationship with users in the conservation.
      */
-    public function users():HasManyThrough
+    public function users(): HasManyThrough
     {
         return $this->hasManyThrough(User::class, UserInConservation::class,
-            'cons_id','id','id','user_id');
+            'cons_id', 'id', 'id', 'user_id');
     }
 
     public function mess()
     {
         return $this->hasMany(MessageInConservation::class, 'cons_id');
+    }
+
+    public function toArray()
+    {
+        $array = [
+            'id' => $this->id,
+        ];
+
+        if ($this->two){
+            $user = $this->users()->where('users.id','!=', auth()->id())->first();
+            $user = $user->toArray();
+            $array['name'] = $user['name'];
+            $array['avatar_url'] = $user['avatar_url'];
+        }else{
+            if ($this->avatar_id) {
+                $avatar = $this->avtGroup()->find($this->avtGroup_id);
+                $array['avatar_url'] = $avatar ? $avatar->url : null;
+            } else {
+                $array['avatar_url'] = null;
+            }
+            $array['name'] = $this->name;
+        }
+
+        if($array['avatar_url'] == null){
+            $array['avatar_url'] = "../image/avatar-trang.jpg";
+        }
+
+        $last_message = $this->mess()->latest()->first();
+        $array['last_message'] = $last_message != null ? $last_message->toArray() : null;
+
+        return $array;
     }
 }

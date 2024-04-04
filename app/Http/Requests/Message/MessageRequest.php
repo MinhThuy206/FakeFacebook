@@ -24,9 +24,9 @@ class MessageRequest extends Request
     public function rules(): array
     {
         return [
-            'user_id' => [
-                'exists:users,id',
-            ],
+//            'cons_id' => [
+//                'exists:conservations,id',
+//            ],
 
             'orderBy' => [
                 Rule::in(['created_at'])

@@ -47,6 +47,7 @@ class RegistrationRequest extends FormRequest
             'username' => [
                 'required',
                 'string',
+                'regex:/[a-zA-Z]/',      // must contain at least one letter
                 'unique:users,email'
             ],
             'password_confirmation' => [

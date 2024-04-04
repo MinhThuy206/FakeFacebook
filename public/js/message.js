@@ -25,13 +25,14 @@ ws.addEventListener('message', event => {
         })
     }
     if (data.message) {
+        data.message.userFrom = JSON.parse(data.message.userFrom)
         $('#message').append(renderData(data))
         onDataReceived(data);
     }
 })
 
 function renderData(message) {
-    if (message.userFrom === userId) {
+    if (message.userFrom.id === userId) {
         html = `
          <div class="card-message sender" style="margin-top: 56px">
             <div class="message-text">${message.message}</div>
@@ -48,56 +49,44 @@ function renderData(message) {
     return html;
 }
 
-function renderUser(user) {
-    let html = ''
-    if (user.avatar_url == null) {
-        html += `
-            <div class="user" data-id="${user.id}" data-username="${user.username}" data-name="${user.name}" data-avatar="${user.avatar_url}">
-                <div class="avatar"><img src="../image/avatar-trang.jpg" alt="User Avatar"></div>
-                <div class="name">${user.name}</div>
-            </div>
-    `
-    } else {
-        html += `
-            <div class="user" data-id="${user.id}" data-username="${user.username}" data-name="${user.name}" data-avatar="${user.avatar_url}">
-                <div class="avatar"><img src="../${user.avatar_url}" alt="User Avatar"></div>
-                <div class="name">${user.name}</div>
-            </div>
-    `
-    }
+function renderConservation(conservation) {
+    return `
+            <div class="user" data-id="${conservation.id}" data-name="${conservation.name}" data-avatarUrl="${conservation.avatar_url}">
+                <div class="avatar"><img src="${conservation.avatar_url}" alt="Avatar"></div>
+                <div class="name">${conservation.name}</div>
+                <div class="lastMessage">
 
-    return html;
+                </div>
+            </div>
+    `;
 }
 
 function getData(data) {
     $.ajax({
         method: "GET",
-        url: "/api/message/filterUserMessage/",
+        url: "/api/message/filterConservations/",
         headers: {'Accept': 'application/json'},
 
         success: function (data, textStatus, jqXHR) {
-            var listUser = '';
-            data.forEach(function (item) {
-                listUser += renderUser(item)
+            var listConservations = '';
+            data.data.forEach(function (item) {
+                listConservations += renderConservation(item)
             }, this)
 
-            $('#chat-user').html(listUser);
+            $('#chat-user').html(listConservations);
 
             $.ajax({
                 method: "GET",
-                url: "/api/message/filterMessage/" + userTo,
+                url: "/api/message/getMessage/" + consId,
                 headers: {'Accept': 'application/json'},
                 success: function (data) {
                     var message = data.data;
-                    var htmlContent = '';
+                    var messageBox = $('#message');
                     message.forEach(function (item) {
-                        htmlContent += renderData(item)
+                        messageBox.prepend(renderData(item))
                     }, this)
-
-                    $('#message').html(htmlContent); // Hiển thị tin nhắn của người dùng
-
                     // Thay đổi đường dẫn URL theo user_id
-                    history.pushState(null, '', '/message/' + userName);
+                    history.pushState(null, '', '/message/' + consId);
                     scrollToBottom();
                 },
                 error: function (data, textStatus, jqXHR) {
@@ -112,17 +101,14 @@ function getData(data) {
 $('form#messageForm').on('submit', function (event) {
     event.preventDefault();
     data = getFormData($(this));
+    data.cons_id = consId
     $.ajax({
         method: "POST",
         url: "/api/message/sent",
-        data: {
-            "message": data.message,
-            "userTo": userTo
-        },
+        data: data,
         headers: {'Accept': 'application/json'},
         success: function (data, textStatus, jqXHR) {
-            getData(data)
-            $('form#messageForm').trigger("reset");
+            $('#message').append(renderData(data));
             scrollToBottom();
             console.log("Upload message success")
         },
@@ -130,28 +116,21 @@ $('form#messageForm').on('submit', function (event) {
             console.log(data)
         }
     })
+    $("#messageInput").val("");
 })
 
 function attachUserClickEvent() {
     $(document).on('click', '.user', function () {
-        let userId = $(this).data('id');
-        let userName = $(this).data('username');
-        let name = $(this).data('name');
-        let avatarUrl = $(this).data('avatar');
-        let avt = '';
-        if (avatarUrl == null) {
-            avt = "../image/avatar-trang.jpg"
-        } else {
-            avt = "../" + avatarUrl;
-        }
-        userTo = $(this).data('id');
+        let consId = $(this).data('id');
+        let consName = $(this).data('name');
+        let avt = $(this).data('avatarUrl');
 
-        $('.userchatname').text(name);
+        $('.chatname').text(consName);
         $('#avatar-img').attr('src', avt)
 
         $.ajax({
             method: "GET",
-            url: "/api/message/filterMessage/" + userId,
+            url: "/api/message/getMessage/" + consId,
             headers: {'Accept': 'application/json'},
             success: function (data) {
                 var message = data.data;
@@ -161,7 +140,7 @@ function attachUserClickEvent() {
                 }, this)
 
                 // Thay đổi đường dẫn URL theo user_id
-                history.pushState(null, '', '/message/' + userName);
+                history.pushState(null, '', '/message/' + consId);
                 $('#message').html(htmlContent); // Hiển thị tin nhắn của người dùng
                 scrollToBottom()
 
@@ -213,8 +192,21 @@ function onDataReceived(data) {
     scrollToBottom(); // Cuộn xuống dưới sau khi hiển thị tin nhắn mới
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    // Thêm sự kiện cho nút chỉnh sửa trang cá nhân
+    var editProfileButton = document.querySelector('.conservations');
+    var editModal = document.getElementById('editModal');
+    var closeModalButton = document.querySelector('.close');
+    var overlay = document.getElementById('overlay');
 
-
-
-
-
+    closeModalButton.addEventListener('click', function () {
+        editModal.style.display = 'none';
+        overlay.style.display = 'none';
+    });
+    window.addEventListener('click', function (event) {
+        if (event.target === overlay) {
+            editModal.style.display = 'none';
+            overlay.style.display = 'none'
+        }
+    });
+});
