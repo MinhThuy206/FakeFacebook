@@ -57,7 +57,7 @@ class MessageInConservationController extends Controller
     public function store(StoreMessageInConservationRequest $request)
     {
         $cons = UserInConservation::query()->where('cons_id', $request->cons_id)
-            ->where('user_id', auth()->id())->first();;
+            ->where('user_id', auth()->id())->first();
         if (!$cons) {
             return response()->json(['message' => 'not exist']);
         } else {
@@ -68,7 +68,8 @@ class MessageInConservationController extends Controller
             if (!$message) {
                 return response()->json(['message' => 'not exist'], 422);
             } else {
-                $users = UserInConservation::query()->where('cons_id', $request->cons_id)->get();
+                $users = UserInConservation::query()->where('cons_id', $request->cons_id)
+                    ->where('user_id','!=',auth()->id())->get();
                 foreach ($users as $user) {
                     broadcast(new MessageSent($message, $user->user_id));
                 }

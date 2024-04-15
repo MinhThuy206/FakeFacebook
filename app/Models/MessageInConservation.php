@@ -38,7 +38,7 @@ class MessageInConservation extends Model
     public function toArray()
     {
         $user = User::query()->where('id','=',$this->userFrom)->firstOrFail()->toArray();
-       return [
+       $array = [
            'conservationId' => $this->cons_id,
            'created_at' =>$this->created_at,
            'userFrom' => [
@@ -48,6 +48,12 @@ class MessageInConservation extends Model
            ],
            'message' => $this->message
        ];
+
+        if(empty($user['avatar_url'])) {
+            $array['userFrom']['avatar_url'] = "image/avatar-trang.jpg";
+        }
+
+        return $array;
     }
 
     public static function boot()

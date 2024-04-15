@@ -13,7 +13,7 @@
             background-color: #e4e6eb;
             border-radius: 18px;
             color: #333;
-            margin: 0 8px 8px 8px;
+            margin: 0 8px 8px 0px;
             padding: 12px 16px;
             max-width: 80%;
             font-size: 12px;
@@ -31,6 +31,11 @@
             float: left;
         }
 
+        .card-message.receiver {
+            display: flex;
+            align-items: flex-start; /* Đảm bảo các phần tử con được căn chỉnh theo chiều dọc */
+        }
+
         .message-header {
             display: flex;
             align-items: center;
@@ -44,14 +49,12 @@
             height: 60px
         }
 
-        .profile-picture {
-            margin-right: 10px;
-        }
-
         .profile-picture img {
             width: 40px;
             height: 40px;
             border-radius: 50%;
+            margin-right: 10px;
+            align-items: center; /* Căn chỉnh các phần tử con theo chiều dọc */
         }
 
         .chatname {
@@ -246,6 +249,28 @@
             overflow: auto; /* Cho phép cuộn nếu nội dung quá lớn */
         }
 
+        .card-message.receiver {
+            display: flex; /* Sử dụng flexbox để căn chỉnh các phần tử con */
+            align-items: center; /* Căn chỉnh các phần tử con theo chiều dọc */
+        }
+
+        .username-container {
+            opacity: 0; /* Ẩn tên người dùng ban đầu */
+            transition: opacity 0.3s ease; /* Hiệu ứng chuyển đổi khi hiển thị tên người dùng */
+        }
+
+        .name-receiver {
+            background-color: rgba(0, 0, 0, 0.8); /* Màu nền của phần tên người dùng */
+            color: #fff; /* Màu chữ của tên người dùng */
+            padding: 5px 10px; /* Khoảng cách giữa văn bản và biên của phần tên người dùng */
+            border-radius: 5px; /* Đường viền cong của phần tên người dùng */
+        }
+
+        .card-message.receiver:hover .username-container {
+            opacity: 1; /* Hiển thị tên người dùng khi hover vào card-message */
+        }
+
+
 
     </style>
 
@@ -257,7 +282,7 @@
                         <div class="title">Đoạn chat</div>
                         <div id="chatMessage" class="hidden">Tạo nhóm</div>
                         <div style="cursor: pointer; margin-right: 5px;" id="addIcon" class="conservations">
-                            <i class="material-icons" style="margin-right: 3px;">add</i>
+                            <button class="create-group"><i class="material-icons" style="margin-right: 3px;">add</i></button>
                             <!-- Thay "add" bằng class icon của bạn -->
                         </div>
 
@@ -290,7 +315,7 @@
                     </div>
                     <div class="message-container">
                         <div class="message-content" id="messageBody">
-                            <div class="messages" id="message" data-id="{{$cons['id']}}"></div>
+                            <div class="messages" id="message"></div>
                         </div>
                         <div class="message-input">
                             <form id="messageForm">
@@ -309,23 +334,27 @@
         </div>
     </div>
 
-    <!-- Modal -->
     <div class="overlay" id="overlay"></div>
     <div class="modal" id="editModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <!-- Modal Header -->
                 <div class="modal-header">
-                    <h4 class="modal-title">Chỉnh sửa trang cá nhân</h4>
+                    <h4 class="modal-title">Tạo nhóm</h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
-                <!-- Modal body -->
-                <div class="modal-body">
-                    hello
-                </div>
+                <form id="createGroupForm">
+                    <input type="text" class="groupName" id="groupName" placeholder="Nhập tên nhóm...">
+                    <div class="cardUser">
+                        <div class="listUser" id="listUser"></div>
+                    </div>
+                    <button type="submit">Tạo nhóm</button>
+                </form>
             </div>
         </div>
     </div>
+
+
 
 @endsection
 
@@ -335,17 +364,7 @@
         let consId = {{$cons['id']}};
     </script>
 
-
     <script src="{{asset('/js/message.js')}}"></script>
-    <script>
-        $(document).ready(function () {
-            getData({
-                'user_id': {{auth()->user()->id}},
-                'orderBy': 'created_at',
-                'order': 'DESC',
-            })
-        })
-    </script>
 
     <script>
         // JavaScript để giữ thanh cuộn luôn ở dưới
@@ -360,41 +379,25 @@
     </script>
 
     <script>
-        const addIcon = document.getElementById('addIcon');
-        const chatMessage = document.getElementById('chatMessage');
-
-        // Bắt sự kiện hover vào biểu tượng "+"
-        addIcon.addEventListener('mouseenter', function () {
-            chatMessage.classList.remove('hidden'); // Hiển thị đoạn message
-        });
-
-        // Bắt sự kiện hover ra khỏi biểu tượng "+"
-        addIcon.addEventListener('mouseleave', function () {
-            chatMessage.classList.add('hidden'); // Ẩn đoạn message
-        });
+        $(document).ready(function () {
+            getData({
+                'user_id': {{auth()->user()->id}},
+                'orderBy': 'created_at',
+                'order': 'DESC',
+            })
+        })
     </script>
 
     <script>
-        // Lấy phần tử cần thiết
-        var modal = document.getElementById("myModal");
-        var addIcon = document.getElementById("addIcon");
-        var closeButton = document.getElementsByClassName("close")[0];
-
-        // Khi người dùng nhấp vào biểu tượng "+", hiển thị modal
-        addIcon.onclick = function () {
-            modal.style.display = "block";
-        }
-
-        // Khi người dùng nhấp vào nút đóng trong modal, ẩn modal
-        closeButton.onclick = function () {
-            modal.style.display = "none";
-        }
-
-        // Khi người dùng nhấp vào bất kỳ đâu bên ngoài modal, ẩn modal
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
+        $(document).ready(function () {
+            getDataUser({
+                'user_id': {{auth()-> user() -> id}},
+                'orderBy': 'created_at',
+                'order': 'DESC',
+                'page': '0',
+                'pagesize': '5'
+            })
+        })
     </script>
+
 @endsection

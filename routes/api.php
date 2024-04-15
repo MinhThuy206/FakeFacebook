@@ -65,8 +65,6 @@ Route::group(['prefix' => '/message', 'middleware' => CheckLogin::class], functi
     Route::get('/filterConservations',[ConservationController::class,'filterConservations']);
     Route::post('/sent',[MessageInConservationController::class,'store']);
     Route::get('/getMessage/{cons_id}',[MessageInConservationController::class,'getMessageInConservation']);
-    Route::get('/filterMessage/{user_id2}',[MessageController::class,'filterMessage']);
-
     Route::post('/storeGroup',[ConservationController::class,'store']);
     Route::post('/sentMessGroup',[MessageInConservationController::class,'store']);
 });

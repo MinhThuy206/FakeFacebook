@@ -1,7 +1,6 @@
 const ws = new WebSocket(`ws://localhost:6001/app/e81326258299847689ba`)
 ws.addEventListener('message', event => {
     var data = JSON.parse(event.data)
-    var event_data = data.event
     if (data.data)
         data = JSON.parse(data.data)
     if (data.socket_id) {
@@ -25,11 +24,35 @@ ws.addEventListener('message', event => {
         })
     }
     if (data.message) {
-        data.message.userFrom = JSON.parse(data.message.userFrom)
         $('#message').append(renderData(data))
-        onDataReceived(data);
+        scrollToBottom();
     }
 })
+
+document.addEventListener('DOMContentLoaded', function () {
+    var createGroup = document.querySelector('.create-group');
+    var editModal = document.getElementById('editModal');
+    var closeModalButton = document.querySelector('.close');
+    var overlay = document.getElementById('overlay');
+
+    createGroup.addEventListener('click', function () {
+        editModal.style.display = 'block';
+        overlay.style.display = 'block';
+    });
+
+    closeModalButton.addEventListener('click', function () {
+        editModal.style.display = 'none';
+        overlay.style.display = 'none';
+    });
+
+    window.addEventListener('click', function (event) {
+        if (event.target === overlay) {
+            editModal.style.display = 'none';
+            overlay.style.display = 'none'
+        }
+    });
+});
+
 
 function renderData(message) {
     if (message.userFrom.id === userId) {
@@ -41,8 +64,15 @@ function renderData(message) {
     } else {
         html = `
          <div class="card-message receiver" style="margin-top: 56px">
-            <div class="message-text" >${message.message}</div>
-        </div>
+    <div class="profile-picture">
+        <img src="../${message.userFrom.avatar_url}" alt="">
+    </div>
+    <div class="message-text">${message.message}</div>
+    <div class="username-container">
+        <span class="name-receiver">${message.userFrom.name}</span>
+    </div>
+</div>
+
     `
     }
 
@@ -51,8 +81,8 @@ function renderData(message) {
 
 function renderConservation(conservation) {
     return `
-            <div class="user" data-id="${conservation.id}" data-name="${conservation.name}" data-avatarUrl="${conservation.avatar_url}">
-                <div class="avatar"><img src="${conservation.avatar_url}" alt="Avatar"></div>
+            <div class="user conservation" data-id="${conservation.id}" data-name="${conservation.name}" data-avatarurl="${conservation.avatar_url}">
+                <div class="avatar"><img src="../${conservation.avatar_url}" alt="Avatar"></div>
                 <div class="name">${conservation.name}</div>
                 <div class="lastMessage">
 
@@ -61,7 +91,21 @@ function renderConservation(conservation) {
     `;
 }
 
-function getData(data) {
+function cardUser(user){
+    if(user.avatar_url == null){
+        user.avatar_url =  "image/avatar-trang.jpg";
+    }
+    return `
+            <div class="user select" data-id="${user.id}" data-name="${user.name}" data-avatarurl="${user.avatar_url}">
+                <input type="checkbox" class="user-checkbox" data-id="${user.id}" data-name="${user.name}" data-avatarurl="${user.avatar_url}">
+                <div class="avatar"><img src="../${user.avatar_url}" alt="Avatar"></div>
+                <div class="name">${user.name}</div>
+
+            </div>
+    `;
+}
+
+function getData(data){
     $.ajax({
         method: "GET",
         url: "/api/message/filterConservations/",
@@ -70,6 +114,7 @@ function getData(data) {
         success: function (data, textStatus, jqXHR) {
             var listConservations = '';
             data.data.forEach(function (item) {
+                console.log(item);
                 listConservations += renderConservation(item)
             }, this)
 
@@ -85,23 +130,76 @@ function getData(data) {
                     message.forEach(function (item) {
                         messageBox.prepend(renderData(item))
                     }, this)
+
                     // Thay đổi đường dẫn URL theo user_id
                     history.pushState(null, '', '/message/' + consId);
                     scrollToBottom();
+                    attachUserClickEvent();
                 },
                 error: function (data, textStatus, jqXHR) {
                     console.log(data)
                 }
             })
-            attachUserClickEvent();
+        }
+    })
+
+}
+
+
+
+
+function getDataUser(data) {
+    $.ajax({
+        method: "GET",
+        url: "/api/friend/user",
+        data: data,
+        headers: {'Accept': 'application/json'},
+        success: function (data, textStatus, jqXHR) {
+            var users = data.data;
+            var htmlContent = '';
+            users.forEach(function (user) {
+                htmlContent += cardUser(user);
+            });
+            $('#listUser').html(htmlContent);
         }
     })
 }
 
+$('#createGroupForm').submit(function(event) {
+    event.preventDefault();
+
+    var groupName = $('#groupName').val();
+
+    var userIds = [];
+
+    $('.user-checkbox:checked').each(function() {
+        userIds.push($(this).data('id'));
+    });
+
+    userIds.push(userId)
+
+    $.ajax({
+        method: "POST",
+        url: "/api/message/storeGroup",
+        data: {
+            "name": groupName,
+            "users": userIds
+        },
+        headers: {'Accept': 'application/json'},
+        success: function (data) {
+            location.reload();
+        },
+        error: function (jqXHR, data) {
+            console.error(data);
+        }
+    });
+});
+
+
 $('form#messageForm').on('submit', function (event) {
     event.preventDefault();
     data = getFormData($(this));
-    data.cons_id = consId
+    data.cons_id = consId;
     $.ajax({
         method: "POST",
         url: "/api/message/sent",
@@ -120,93 +218,40 @@ $('form#messageForm').on('submit', function (event) {
 })
 
 function attachUserClickEvent() {
-    $(document).on('click', '.user', function () {
-        let consId = $(this).data('id');
+    $(document).on('click', '.user.conservation', function () {
+        let consIdnew = $(this).data('id');
         let consName = $(this).data('name');
-        let avt = $(this).data('avatarUrl');
+        let avt = $(this).data('avatarurl');
+
+        let avtUrl = "../" + avt
 
         $('.chatname').text(consName);
-        $('#avatar-img').attr('src', avt)
+        $('#avatar-img').attr('src', avtUrl)
+        consId = consIdnew;
 
         $.ajax({
             method: "GET",
-            url: "/api/message/getMessage/" + consId,
+            url: "/api/message/getMessage/" + consIdnew,
             headers: {'Accept': 'application/json'},
             success: function (data) {
                 var message = data.data;
                 var htmlContent = '';
+                message.sort((a, b) => (a.created_at > b.created_at) ? -1 : 1);
+                // Hiển thị tin nhắn từ dưới lên
                 message.forEach(function (item) {
-                    htmlContent += renderData(item)
+                    htmlContent = renderData(item) + htmlContent;
                 }, this)
 
                 // Thay đổi đường dẫn URL theo user_id
-                history.pushState(null, '', '/message/' + consId);
+                history.pushState(null, '', '/message/' + consIdnew);
                 $('#message').html(htmlContent); // Hiển thị tin nhắn của người dùng
-                scrollToBottom()
-
-
+                scrollToBottom();
             },
-            error: function (data, textStatus, jqXHR) {
+            error: function (data) {
                 console.log(data)
             }
         })
     });
 }
 
-// Hàm này sẽ nhóm tin nhắn theo ngày
-function groupMessagesByDate(messages) {
-    var groupedMessages = {};
-    messages.forEach(function (message) {
-        var date = new Date(message.created_at).toLocaleDateString();
-        if (!groupedMessages[date]) {
-            groupedMessages[date] = [];
-        }
-        groupedMessages[date].push(message);
-    });
-    return groupedMessages;
-}
 
-// Hàm này sẽ hiển thị tin nhắn và ngày tương ứng
-function displayMessages(groupedMessages) {
-    var messageBody = document.getElementById("messageBody");
-    messageBody.innerHTML = ''; // Xóa tin nhắn hiện tại trước khi hiển thị tin nhắn mới
-    Object.keys(groupedMessages).forEach(function (date) {
-        var messages = groupedMessages[date];
-        var messageDateElement = document.createElement('div');
-        messageDateElement.textContent = date;
-        messageDateElement.classList.add('message-date');
-        messageBody.appendChild(messageDateElement);
-        messages.forEach(function (message) {
-            var messageElement = document.createElement('div');
-            messageElement.textContent = message.content;
-            messageElement.classList.add('message-text');
-            messageBody.appendChild(messageElement);
-        });
-    });
-}
-
-// Hàm này sẽ được gọi khi nhận được dữ liệu tin nhắn mới từ máy chủ
-function onDataReceived(data) {
-    var groupedMessages = groupMessagesByDate(data.messages);
-    displayMessages(groupedMessages);
-    scrollToBottom(); // Cuộn xuống dưới sau khi hiển thị tin nhắn mới
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    // Thêm sự kiện cho nút chỉnh sửa trang cá nhân
-    var editProfileButton = document.querySelector('.conservations');
-    var editModal = document.getElementById('editModal');
-    var closeModalButton = document.querySelector('.close');
-    var overlay = document.getElementById('overlay');
-
-    closeModalButton.addEventListener('click', function () {
-        editModal.style.display = 'none';
-        overlay.style.display = 'none';
-    });
-    window.addEventListener('click', function (event) {
-        if (event.target === overlay) {
-            editModal.style.display = 'none';
-            overlay.style.display = 'none'
-        }
-    });
-});

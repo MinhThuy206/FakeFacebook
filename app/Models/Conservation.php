@@ -68,7 +68,7 @@ class Conservation extends Model
         }
 
         if($array['avatar_url'] == null){
-            $array['avatar_url'] = "../image/avatar-trang.jpg";
+            $array['avatar_url'] = "image/avatar-trang.jpg";
         }
 
         $last_message = $this->mess()->latest()->first();

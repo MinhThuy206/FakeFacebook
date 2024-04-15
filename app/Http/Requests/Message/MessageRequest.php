@@ -24,10 +24,6 @@ class MessageRequest extends Request
     public function rules(): array
     {
         return [
-//            'cons_id' => [
-//                'exists:conservations,id',
-//            ],
-
             'orderBy' => [
                 Rule::in(['created_at'])
             ],
@@ -35,7 +31,6 @@ class MessageRequest extends Request
             'order' => [
                 Rule::in(['ASC', 'DESC'])
             ],
-
         ];
     }
 }

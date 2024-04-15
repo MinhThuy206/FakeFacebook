@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Message\ConservationRequest;
 use App\Http\Requests\Message\StoreConservationRequest;
 use App\Models\Conservation;
 use App\Models\User;
@@ -30,21 +31,32 @@ class ConservationController extends Controller
     /**
      * Filter Conservations.
      */
-    public function filterConservations()
+    public function filterConservations(ConservationRequest $request)
     {
-        $conversations = Conservation::query()->whereHas('users', function ($q) {
+        $conservations = Conservation::query()->whereHas('users', function ($q) {
             $q->where('users.id', '=', auth()->id());
-        })->get();
+        });
+
+        if (!$request->has('orderBy')) {
+            $request->orderBy = "created_at";
+        }
+        if (!$request->has('order')) {
+            $request->order = "desc";
+        }
+
+        $conservations = $conservations->orderBy($request->orderBy, $request->order)
+            ->paginate($request->size ?? 10,'*',
+                'page', $request->page ?? 0);
         $response = [
             "data" => array(),
-//            "current_page" => $conversations->currentPage(),
-//            "last_page" => $conversations->lastPage(),
-//            "per_page" => $conversations->perPage(),
-//            "total" => $conversations->total()
+            "current_page" => $conservations->currentPage(),
+            "last_page" => $conservations->lastPage(),
+            "per_page" => $conservations->perPage(),
+            "total" => $conservations->total()
         ];
 
-        foreach($conversations as $conversation){
-            $response['data'][] = $conversation -> toArray();
+        foreach($conservations as $conservation){
+            $response['data'][] = $conservation -> toArray();
         }
         return response()->json($response);
     }

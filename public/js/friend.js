@@ -59,7 +59,6 @@ function getDataUser(data) {
         headers: {'Accept': 'application/json'},
         success: function (data, textStatus, jqXHR) {
             var users = data.data;
-            console.log(users);
             var htmlContent = '';
             users.forEach(function (user, index) {
                 // Nếu là cột đầu tiên hoặc là cột thứ tư, thêm một hàng mới

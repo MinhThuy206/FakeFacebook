@@ -18,10 +18,10 @@ document.addEventListener('DOMContentLoaded', function () {
     var closeModalButton = document.querySelector('.close');
     var overlay = document.getElementById('overlay');
 
-    // editProfileButton.addEventListener('click', function () {
-    //     editModal.style.display = 'block';
-    //     overlay.style.display = 'block';
-    // });
+    editProfileButton.addEventListener('click', function () {
+        editModal.style.display = 'block';
+        overlay.style.display = 'block';
+    });
 
     closeModalButton.addEventListener('click', function () {
         editModal.style.display = 'none';
