@@ -4,7 +4,7 @@ namespace App\Http\Requests\Message;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreMessageInConservationRequest extends FormRequest
+class StoreConversationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,23 +17,23 @@ class StoreMessageInConservationRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, \Illuminate\Contracts\Validation\|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'userFrom' => [
+            'name' => [
+                'required',
+            ],
+            'users' => [
+                'array',
+                'min:3',
+                'required'
+            ],
+            'users.*' => [
                 'exists:users,id',
+                'required'
             ],
-
-            'cons_id' => [
-                'required',
-            ],
-
-            'message' => [
-                'required',
-                'string',
-            ]
         ];
     }
 }

@@ -311,6 +311,14 @@
                         </div>
                         <div>
                             <div class="chatname">{{ $cons['name'] }}</div>
+                            <div id="online">
+                            @if($cons['online'] == 0)
+                                không hoạt động
+                            @elseif($cons['online'] == 'online')
+                                Đang hoạt động
+                            @else
+                                Hoạt động {{$cons['online']}} phút trước
+                            @endif</div>
                         </div>
                     </div>
                     <div class="message-container">
@@ -362,6 +370,7 @@
     <script>
         const userId = {{auth()->user()->id}};
         let consId = {{$cons['id']}};
+
     </script>
 
     <script src="{{asset('/js/message.js')}}"></script>
@@ -399,5 +408,7 @@
             })
         })
     </script>
+
+
 
 @endsection

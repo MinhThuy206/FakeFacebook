@@ -10,12 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('message_in_conservations', function (Blueprint $table) {
+        Schema::create('message_in_conversations', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('userFrom');
             $table->foreign('userFrom')->references('id')->on('users');
             $table->unsignedBigInteger('cons_id')->nullable();
-            $table->foreign('cons_id')->references('id')->on('conservations');
+            $table->foreign('cons_id')->references('id')->on('conversations');
             $table->text('message');
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('message_in_conservations');
+        Schema::dropIfExists('message_in_conversations');
     }
 };

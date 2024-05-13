@@ -14,11 +14,11 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property string name
  * @property int avtGroup_id
  */
-class Conservation extends Model
+class Conversation extends Model
 {
     use HasFactory;
 
-    protected $table = 'conservations';
+    protected $table = 'conversations';
 
     protected $guarded = ['id'];
 
@@ -37,13 +37,40 @@ class Conservation extends Model
      */
     public function users(): HasManyThrough
     {
-        return $this->hasManyThrough(User::class, UserInConservation::class,
+        return $this->hasManyThrough(User::class, UserInConversation::class,
             'cons_id', 'id', 'id', 'user_id');
     }
 
     public function mess()
     {
-        return $this->hasMany(MessageInConservation::class, 'cons_id');
+        return $this->hasMany(MessageInConversation::class, 'cons_id');
+    }
+
+    public function status()
+    {
+        $online = '';
+        $users = $this->users()->where('users.id', '!=', auth()->id())->get();
+//        die($users);
+        if ($this->two) {
+            foreach ($users as $user) {
+                if ($user->toArray()['online'] == 'online') {
+                    $online = 'online';
+                    break;
+                } else {
+                    $online = $user->toArray()['online'];
+                }
+            }
+        } else {
+            foreach ($users as $user) {
+                if ($user->toArray()['online'] == 'online') {
+                    $online = 'online';
+                    break;
+                } else {
+                    $online = 'offline';
+                }
+            }
+        }
+        return $online;
     }
 
     public function toArray()
@@ -52,12 +79,12 @@ class Conservation extends Model
             'id' => $this->id,
         ];
 
-        if ($this->two){
-            $user = $this->users()->where('users.id','!=', auth()->id())->first();
+        if ($this->two) {
+            $user = $this->users()->where('users.id', '!=', auth()->id())->first();
             $user = $user->toArray();
             $array['name'] = $user['name'];
             $array['avatar_url'] = $user['avatar_url'];
-        }else{
+        } else {
             if ($this->avatar_id) {
                 $avatar = $this->avtGroup()->find($this->avtGroup_id);
                 $array['avatar_url'] = $avatar ? $avatar->url : null;
@@ -67,13 +94,15 @@ class Conservation extends Model
             $array['name'] = $this->name;
         }
 
-        if($array['avatar_url'] == null){
+        if ($array['avatar_url'] == null) {
             $array['avatar_url'] = "image/avatar-trang.jpg";
         }
 
         $last_message = $this->mess()->latest()->first();
         $array['last_message'] = $last_message != null ? $last_message->toArray() : null;
 
+
+        $array['online'] = $this->status();
         return $array;
     }
 }

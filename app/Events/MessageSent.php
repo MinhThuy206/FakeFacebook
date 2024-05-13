@@ -2,9 +2,10 @@
 
 namespace App\Events;
 
-use App\Models\MessageInConservation;
+use App\Models\MessageInConversation;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -22,7 +23,7 @@ class MessageSent implements ShouldBroadcastNow
      *
      * @return void
      */
-    public function __construct(MessageInConservation $message, $userTo)
+    public function __construct(MessageInConversation $message, $userTo)
     {
         $this->message = $message;
         $this->userTo = $userTo;

@@ -14,11 +14,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property int user_id
  * @property int admin
  */
-class UserInConservation extends Model
+class UserInConversation extends Model
 {
     use HasFactory;
 
-    protected $table = 'user_in_conservations';
+    protected $table = 'user_in_conversations';
 
     protected $guarded = ['id'];
 
@@ -29,13 +29,13 @@ class UserInConservation extends Model
      */
     public function conservation()
     {
-        return $this->belongsTo(Conservation::class, 'cons_id');
+        return $this->belongsTo(Conversation::class, 'cons_id');
     }
 
     /**
      * Relationship with the user.
      */
-    public function userInConservation()
+    public function userInConversation()
     {
         return $this->belongsTo(User::class, 'user_id');
     }

@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('conservations', function (Blueprint $table) {
+        Schema::create('conversations', function (Blueprint $table) {
             $table->id();
             $table->text('name')->nullable();
             $table->unsignedBigInteger('avtGroup_id')->nullable();
@@ -25,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('conservations');
+        Schema::dropIfExists('conversations');
     }
 };

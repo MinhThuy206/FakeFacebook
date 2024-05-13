@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\ValidationException;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -26,6 +27,30 @@ class RouteServiceProvider extends ServiceProvider
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('login', function (Request $request) {
+            $key = $request->input('email')?:$request->ip();
+            return [
+                Limit::perMinutes(3,3)->by($key)
+                    ->response(function (Request $request,array $headers) use ($key) {
+                        return response()->json([
+                            'retry-after'=>$headers['Retry-After']
+                        ],429);
+                    })
+            ];
+        });
+
+        RateLimiter::for('check-alive', function (Request $request) {
+            $key = auth()->id();
+            return [
+                Limit::perMinutes(1,1)->by($key)
+                    ->response(function (Request $request,array $headers) use ($key) {
+                        return response()->json([
+                            'retry-after'=>$headers['Retry-After']
+                        ],429);
+                    })
+            ];
         });
 
         $this->routes(function () {

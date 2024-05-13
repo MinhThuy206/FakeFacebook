@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -36,31 +36,6 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'remember_token',
     ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
-
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
-
-    /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
-     *
-     * @return array
-     */
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
 
     public function friends(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
@@ -93,6 +68,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Message::class);
     }
 
+    public function lastOnline()
+    {
+        return $this->hasOne(UserStatus::class);
+    }
+
     public function toArray()
     {
         $array = [
@@ -104,6 +84,7 @@ class User extends Authenticatable implements JWTSubject
             'friends' => $this->friends()->count(),
             'avatar_id' => $this->avatar_id,
             'cover_id' => $this->cover_id,
+//            'online' =>0
         ];
 
         if ($this->avatar_id) {
@@ -131,6 +112,18 @@ class User extends Authenticatable implements JWTSubject
             }
         } else {
             $array['status'] = 'not login';
+        }
+
+        if($this->lastOnline()->exists()) {
+            $start = Carbon::parse($this->lastOnline->last_online_at);
+            $end = Carbon::now();
+            if ($start->diffInSeconds($end) < 60) {
+                $array['online'] = "online";
+            } else {
+                $array['online'] = $start->diff($end)->format('%H:%I:%S');
+            }
+        }else{
+            $array['online'] =0;
         }
         return $array;
     }

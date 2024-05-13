@@ -4,14 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Events\MessageSent;
 use App\Http\Requests\Message\MessageRequest;
-use App\Http\Requests\Message\StoreMessageInConservationRequest;
-use App\Models\Conservation;
-use App\Models\MessageInConservation;
+use App\Http\Requests\Message\StoreMessageInConversationRequest;
+use App\Models\Conversation;
+use App\Models\MessageInConversation;
 use App\Models\User;
-use App\Models\UserInConservation;
-use Illuminate\Support\Facades\DB;
+use App\Models\UserInConversation;
 
-class MessageInConservationController extends Controller
+class MessageInConversationController extends Controller
 {
     /**
      * Show the form for creating a new resource.
@@ -20,55 +19,57 @@ class MessageInConservationController extends Controller
     {
         $cons=null;
         if (is_numeric($identify)){
-            $cons = Conservation::query()->whereHas('users', function ($q) {
+            $cons = Conversation::query()->whereHas('users', function ($q) {
                 $q->where('users.id', '=', auth()->id());
             })->where('id','=',$identify)->first();
         } else {
             $user = User::where('username', $identify)->first();
-            $cons = Conservation::query()->whereHas('users', function ($q) {
+            $cons = Conversation::query()->whereHas('users', function ($q) {
                 $q->where('users.id', '=', auth()->id());
             })->whereHas('users', function ($q) use ($user) {
                 $q->where('users.id', '=', $user->id);
             })->where('two', true)->first();
             if (!$cons) {
-                $cons = Conservation::create([
+                $cons = Conversation::create([
                     'name' => $user->name,
                     'avtGroup_id' => $user->avatar_id,
                     'two' => true
                 ]);
-                UserInConservation::query()->insert([
+                UserInConversation::query()->insert([
                     'cons_id' => $cons->id,
                     'user_id' => $user->id,
                     'admin' => true
                 ]);
-                UserInConservation::query()->insert([
+                UserInConversation::query()->insert([
                     'cons_id' => $cons->id,
                     'user_id' => auth()->id(),
                     'admin' => true
                 ]);
             }
         }
+
+
         return view('page.auth.messenger', compact(['cons']));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMessageInConservationRequest $request)
+    public function store(StoreMessageInConversationRequest $request)
     {
-        $cons = UserInConservation::query()->where('cons_id', $request->cons_id)
+        $cons = UserInConversation::query()->where('cons_id', $request->cons_id)
             ->where('user_id', auth()->id())->first();
         if (!$cons) {
             return response()->json(['message' => 'not exist']);
         } else {
-            $message = MessageInConservation::create([
+            $message = MessageInConversation::create([
                 'cons_id' => $request->cons_id,
                 'message' => $request->get('message'),
             ]);
             if (!$message) {
                 return response()->json(['message' => 'not exist'], 422);
             } else {
-                $users = UserInConservation::query()->where('cons_id', $request->cons_id)
+                $users = UserInConversation::query()->where('cons_id', $request->cons_id)
                     ->where('user_id','!=',auth()->id())->get();
                 foreach ($users as $user) {
                     broadcast(new MessageSent($message, $user->user_id));
@@ -78,10 +79,10 @@ class MessageInConservationController extends Controller
         }
     }
 
-    public function getMessageInConservation(MessageRequest $request,$cons_id)
+    public function getMessageInConversation(MessageRequest $request,$cons_id)
     {
-        Conservation::query()->where("id","=",$cons_id)->firstOrFail();
-        $messages = MessageInConservation::query()->where('cons_id', '=', $cons_id);
+        Conversation::query()->where("id","=",$cons_id)->firstOrFail();
+        $messages = MessageInConversation::query()->where('cons_id', '=', $cons_id);
         if (!$request->has('orderBy')) {
             $request->orderBy = "created_at";
         }

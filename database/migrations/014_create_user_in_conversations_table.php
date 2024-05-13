@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_in_conservations', function (Blueprint $table) {
+        Schema::create('user_in_conversations', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('cons_id');
-            $table->foreign('cons_id')->references('id')->on('conservations')->onDelete('cascade');
+            $table->foreign('cons_id')->references('id')->on('conversations')->onDelete('cascade');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->boolean('admin');
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_in_conservations');
+        Schema::dropIfExists('user_in_conversations');
     }
 };

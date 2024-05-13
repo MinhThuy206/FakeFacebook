@@ -16,11 +16,11 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough as HasManyThroughAlias
  * @property int userFrom
  * @property string message
  */
-class MessageInConservation extends Model
+class MessageInConversation extends Model
 {
     use HasFactory;
 
-    protected $table = 'message_in_conservations';
+    protected $table = 'message_in_conversations';
 
     protected $guarded = ['id'];
 

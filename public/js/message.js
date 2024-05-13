@@ -1,3 +1,4 @@
+var cons_id = [];
 const ws = new WebSocket(`ws://localhost:6001/app/e81326258299847689ba`)
 ws.addEventListener('message', event => {
     var data = JSON.parse(event.data)
@@ -23,8 +24,12 @@ ws.addEventListener('message', event => {
             }
         })
     }
+
     if (data.message) {
-        $('#message').append(renderData(data))
+        $('.user.conservation[data-id='+data.conservationId+']').prependTo('#chat-user');
+        if (data.conservationId == consId)
+            $('#message').append(renderData(data));
+
         scrollToBottom();
     }
 })
@@ -79,9 +84,9 @@ function renderData(message) {
     return html;
 }
 
-function renderConservation(conservation) {
+function renderConversation(conservation) {
     return `
-            <div class="user conservation" data-id="${conservation.id}" data-name="${conservation.name}" data-avatarurl="${conservation.avatar_url}">
+            <div class="user conservation" data-id="${conservation.id}" data-name="${conservation.name}" data-avatarurl="${conservation.avatar_url}" data-online="${conservation.online}">
                 <div class="avatar"><img src="../${conservation.avatar_url}" alt="Avatar"></div>
                 <div class="name">${conservation.name}</div>
                 <div class="lastMessage">
@@ -91,9 +96,9 @@ function renderConservation(conservation) {
     `;
 }
 
-function cardUser(user){
-    if(user.avatar_url == null){
-        user.avatar_url =  "image/avatar-trang.jpg";
+function cardUser(user) {
+    if (user.avatar_url == null) {
+        user.avatar_url = "image/avatar-trang.jpg";
     }
     return `
             <div class="user select" data-id="${user.id}" data-name="${user.name}" data-avatarurl="${user.avatar_url}">
@@ -105,20 +110,20 @@ function cardUser(user){
     `;
 }
 
-function getData(data){
+function getData(data) {
     $.ajax({
         method: "GET",
-        url: "/api/message/filterConservations/",
+        url: "/api/message/filterConversations/",
         headers: {'Accept': 'application/json'},
 
         success: function (data, textStatus, jqXHR) {
-            var listConservations = '';
+            var listConversations = '';
             data.data.forEach(function (item) {
-                console.log(item);
-                listConservations += renderConservation(item)
+                listConversations += renderConversation(item)
+                cons_id.push(item.id)
             }, this)
 
-            $('#chat-user').html(listConservations);
+            $('#chat-user').html(listConversations);
 
             $.ajax({
                 method: "GET",
@@ -146,8 +151,6 @@ function getData(data){
 }
 
 
-
-
 function getDataUser(data) {
     $.ajax({
         method: "GET",
@@ -165,14 +168,14 @@ function getDataUser(data) {
     })
 }
 
-$('#createGroupForm').submit(function(event) {
+$('#createGroupForm').submit(function (event) {
     event.preventDefault();
 
     var groupName = $('#groupName').val();
 
     var userIds = [];
 
-    $('.user-checkbox:checked').each(function() {
+    $('.user-checkbox:checked').each(function () {
         userIds.push($(this).data('id'));
     });
 
@@ -222,11 +225,22 @@ function attachUserClickEvent() {
         let consIdnew = $(this).data('id');
         let consName = $(this).data('name');
         let avt = $(this).data('avatarurl');
+        let active = $(this).data('online');
+        if (active === 0) {
+            active = ''
+        } else if (active === 'offline') {
+            active = 'Không hoạt động'
+        } else if (active === 'online') {
+            active = 'Đang hoạt đông'
+        } else{
+            active = 'Hoạt động ' + active + ' phút trước'
+        }
 
         let avtUrl = "../" + avt
 
         $('.chatname').text(consName);
-        $('#avatar-img').attr('src', avtUrl)
+        $('#avatar-img').attr('src', avtUrl);
+        $('#online').text(active);
         consId = consIdnew;
 
         $.ajax({
@@ -253,5 +267,50 @@ function attachUserClickEvent() {
         })
     });
 }
+
+function myLoop() {         //  create a loop function
+    setInterval(function() {   //  call a 3s setTimeout when the loop is called
+        $.ajax({
+            method: "PATCH",
+            url: "/api/check-alive",
+        })
+    }, 60000)
+}
+myLoop();
+
+function loop(){
+    setInterval(function () {
+        $.ajax({
+            method: "PUT",
+            url: "/api/update-alive",
+            data: {
+                "cons": cons_id
+            },
+            success: function (data, textStatus, jqXHR) {
+                data.forEach(function (cons) {
+                    $('.user.conservation[data-id=' + cons.id + ']').data('online', cons.status);
+                    let act = cons.status
+                    if (act === 0) {
+                        act = ''
+                    } else if (act === 'offline') {
+                        act = 'Không hoạt động'
+                    } else if (act === 'online') {
+                        act = 'Đang hoạt đông'
+                    } else {
+                        act = 'Hoạt động ' + act + ' phút trước'
+                    }
+                    $('#online').text(act);
+
+
+                })
+            },
+        })
+    }, 60000)
+}
+
+loop()
+
+
+
 
 

@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\UserInConservation;
+use App\Models\UserInConversation;
 use Illuminate\Auth\Access\Response;
 
-class UserInConservationPolicy
+class UserInConversationPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -19,7 +19,7 @@ class UserInConservationPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, UserInConservation $userInConservation): bool
+    public function view(User $user, UserInConversation $userInConversation): bool
     {
         //
     }
@@ -35,7 +35,7 @@ class UserInConservationPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, UserInConservation $userInConservation): bool
+    public function update(User $user, UserInConversation $userInConversation): bool
     {
         //
     }
@@ -43,7 +43,7 @@ class UserInConservationPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, UserInConservation $userInConservation): bool
+    public function delete(User $user, UserInConversation $userInConversation): bool
     {
         //
     }
@@ -51,7 +51,7 @@ class UserInConservationPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, UserInConservation $userInConservation): bool
+    public function restore(User $user, UserInConversation $userInConversation): bool
     {
         //
     }
@@ -59,7 +59,7 @@ class UserInConservationPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, UserInConservation $userInConservation): bool
+    public function forceDelete(User $user, UserInConversation $userInConversation): bool
     {
         //
     }
